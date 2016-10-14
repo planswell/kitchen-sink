@@ -42,24 +42,54 @@ defmodule KitchenSink.Map do
 
   """
   def deep_merge(left, right) do
-    Map.merge(left, right, &deep_resolve/3)
+    do_deep_merge(left, right)
   end
 
   def deep_merge(list) when is_list(list) do
-    Enum.reduce list, reverse(&deep_merge/2)
+    Enum.reduce list, reverse(&do_deep_merge/2)
+  end
+
+  # This allows us to do merges with structs that
+  # have partial structs so the new struct doesn't
+  # overwrite all the values of the old struct
+  defp do_deep_merge(left, %{__struct__: _} = right) do
+    right = clean_struct(right)
+    do_deep_merge(left, right)
+  end
+
+  defp do_deep_merge(left, right) do
+    Map.merge(left, right, &do_deep_resolve/3)
   end
 
   # Key exists in both maps, and both values are maps as well.
   # These can be merged recursively.
-  defp deep_resolve(_key, left = %{}, right = %{}) do
-    deep_merge(left, right)
+  defp do_deep_resolve(_key, left = %{}, right = %{}) do
+    do_deep_merge(left, right)
   end
 
   # Key exists in both maps, but at least one of the values is
   # NOT a map. We fall back to standard merge behavior, preferring
   # the value on the right.
-  defp deep_resolve(_key, _left, right) do
+  defp do_deep_resolve(_key, _left, right) do
     right
+  end
+
+  @doc """
+
+  clean_struct take in a struct and removes the default values from it
+  and returns a map
+
+  """
+  def clean_struct(%{__struct__: struct_type} = struct) do
+    empty_struct = struct(struct_type, %{})
+    map = Map.from_struct(struct)
+    do_clean_struct = fn
+      {:__struct__, _} -> false
+      {key, value} -> value !== Map.get(empty_struct, key)
+    end
+    map
+    |> Enum.filter(do_clean_struct)
+    |> Enum.into(%{})
   end
 
   @doc """

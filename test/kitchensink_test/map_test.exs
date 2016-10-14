@@ -80,4 +80,24 @@ defmodule KitchenSink.MapTest do
     assert Map.rename_key(%{a: 1}, %{a: :b}) == %{b: 1}
     assert Map.rename_key(%{a: 1}, [a: :b]) == %{b: 1}
   end
+
+  defmodule TestMap do
+    defstruct name: nil,
+              age: 0
+  end
+
+  test "Clean struct" do
+    user1 = %TestMap{name: "User 1"}
+    expected = %{name: "User 1"}
+    actual = Map.clean_struct(user1)
+    assert actual == expected
+  end
+
+  test "Don't overwrite structs when default" do
+    user1 = %TestMap{name: "User 1"}
+    user2 = %TestMap{age: 21}
+    expected = %TestMap{name: "User 1", age: 21}
+    actual = Map.deep_merge(user1, user2)
+    assert actual == expected
+  end
 end

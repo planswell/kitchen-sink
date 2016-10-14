@@ -15,7 +15,11 @@ defmodule KitchenSink.Misc do
       tuple when is_tuple(tuple) ->
         elem(tuple, index)
       map when is_map(map) ->
-        map |> Stream.take(index + 1) |> Stream.drop(index) |> Enum.to_list |> Map.new
+        map
+        |> Stream.take(index + 1)
+        |> Stream.drop(index)
+        |> Enum.to_list
+        |> Map.new
     end
   end
 
