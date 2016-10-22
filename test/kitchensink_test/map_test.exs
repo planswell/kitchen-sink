@@ -6,6 +6,10 @@ defmodule KitchenSink.MapTest do
 
   doctest KitchenSink.Map
 
+  test "make sure that Elixir.map functions are working as normal" do
+    assert Map.merge(%{a: 1}, %{a: 2}) == %{a: 1}
+  end
+
   test "empty list produce empty map" do
     assert Map.merge([]) == %{}
   end
@@ -36,10 +40,6 @@ defmodule KitchenSink.MapTest do
     assert Map.deep_merge(%{a: %{b: 1, c: 1}}, %{a: %{b: 2}}) == %{a: %{b: 2, c: 1}}
     assert Map.deep_merge([%{a: %{b: 1, c: 1}}, %{a: %{b: 2}}, %{d: 2}]) == %{a: %{b: 2, c: 1}, d: 2}
     assert Map.deep_merge([%{a: %{b: %{c: %{d: 1}}}}, %{a: %{z: 1}}]) == %{a: %{b: %{c: %{d: 1}}, z: 1}}
-  end
-
-  test "empty args rename produce empty map" do
-    assert Map.rename_key() == %{}
   end
 
   test "empty map rename produce empty map" do
