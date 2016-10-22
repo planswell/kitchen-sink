@@ -104,41 +104,29 @@ defmodule KitchenSink.Map do
 
   """
 
-  def rename_key(map, options) when is_list(options) and length(options) === 1 do
+  def rename_key(%{} = map, options) when is_list(options) and length(options) === 1 do
     [{current_key, new_key}] = options
     rename_key(map, current_key, new_key)
   end
 
-  def rename_key(map, key_map) when is_map(key_map) and map_size(key_map) === 1 do
+  def rename_key(%{} = map, %{} = key_map) when map_size(key_map) === 1 do
     [{current_key, new_key}] = Map.to_list key_map
     rename_key(map, current_key, new_key)
   end
 
-  def rename_key(nil, _) do
-    %{}
-  end
-
-  def rename_key(map, _) when map_size(map) === 0 do
-    %{}
-  end
-
-  def rename_key(map, {current_key, new_key}) do
+  def rename_key(%{} = map, {current_key, new_key}) do
     rename_key(map, current_key, new_key)
   end
 
-  def rename_key(nil, _, _) do
+  def rename_key(_,_) do
     %{}
   end
 
-  def rename_key(map, _, _) when map_size(map) === 0 do
-    %{}
-  end
-
-  def rename_key(map, key, key) do
+  def rename_key(%{} = map, key, key) do
     map
   end
 
-  def rename_key(map, current_key, new_key) do
+  def rename_key(%{} = map, current_key, new_key) do
     {popped, popped_map} = Map.pop(map, current_key)
 
     case popped do
@@ -147,7 +135,7 @@ defmodule KitchenSink.Map do
     end
   end
 
-  def rename_key() do
+  def rename_key(_,_,_) do
     %{}
   end
 end
