@@ -38,10 +38,6 @@ defmodule KitchenSink.MapTest do
     assert Map.deep_merge([%{a: %{b: %{c: %{d: 1}}}}, %{a: %{z: 1}}]) == %{a: %{b: %{c: %{d: 1}}, z: 1}}
   end
 
-  test "empty args rename produce empty map" do
-    assert Map.rename_key() == %{}
-  end
-
   test "empty map rename produce empty map" do
     assert Map.rename_key(%{}, :a, :b) == %{}
     assert Map.rename_key(%{}, {:a, :b}) == %{}
