@@ -16,7 +16,6 @@ defmodule KitchenSink.FunctionTest do
     triple = fn(x) -> x * 3 end
     square = fn(x) -> x * x end
 
-    assert double.(1) == 2
     assert F.compose([square, double, triple]).(3) == 3 * 3 * 2 * 18
   end
 
@@ -25,7 +24,6 @@ defmodule KitchenSink.FunctionTest do
     triple = fn(x) -> x * 3 end
     square = fn(x) -> x * x end
 
-    assert double.(1) == 2
     assert F.pipe([square, double, triple]).(3) == 3 * 3 * 2 * 3
   end
 
