@@ -10,7 +10,7 @@ defmodule KitchenSink.List do
   look-up table.
   """
   def index_on(list_of_maps, take_keys, value_key) do
-    take_keys = MapSet.new(take_keys) |> MapSet.delete(value_key)
+    take_keys = take_keys |> List.wrap |> MapSet.new |> MapSet.delete(value_key)
     lookup_transform = fn(map) ->
       {
         Map.take(map, take_keys),

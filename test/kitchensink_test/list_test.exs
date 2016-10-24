@@ -20,5 +20,6 @@ defmodule KitchenSink.ListTest do
     ]
 
     assert L.index_on(input, [:a], :b) == expected
+    assert L.index_on(input, :a, :b) == expected
   end
 end
