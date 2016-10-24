@@ -6,16 +6,20 @@ defmodule KitchenSink.ListTest do
 
   doctest KitchenSink.List
 
-  test "transpose" do
-    expected = [[1, 4, 7],
-                [2, 5, 8],
-                [3, 6, 9]]
+  test "index_on" do
+    expected = %{
+      %{a: 1} => 1,
+      %{a: 2} => 2,
+      %{a: 3} => 3
+    }
 
-    input = [[1, 2, 3],
-             [4, 5, 6],
-             [7, 8, 9]]
+      input =
+      [
+      %{a: 1, b: 1},
+      %{a: 2, b: 2},
+      %{a: 3, b: 3}
+    ]
 
-    assert L.transpose(input) == expected
-    assert L.transpose(expected) == input
+    assert L.index_on(input, [:a], :b) == expected
   end
 end

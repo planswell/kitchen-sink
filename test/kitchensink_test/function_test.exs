@@ -16,7 +16,7 @@ defmodule KitchenSink.FunctionTest do
     triple = fn(x) -> x * 3 end
     square = fn(x) -> x * x end
 
-    assert F.compose([square, double, triple]).(3) == 3 * 3 * 2 * 18
+    assert F.compose([square, double, triple]).(3) == (3 * 3 * 2) |> :math.pow(2)
   end
 
   test "pipe" do
@@ -28,11 +28,15 @@ defmodule KitchenSink.FunctionTest do
   end
 
   test "juxt" do
+    expected = [[2, 3, 1],
+                [4, 6, 4],
+                [6, 9, 9]]
+
     double = fn(x) -> x * 2 end
     triple = fn(x) -> x * 3 end
     square = fn(x) -> x * x end
 
-    assert F.juxt([double, triple, square]).([1, 2, 3]) ==
-      [[2, 3, 1], [4, 6, 4], [6, 9, 9]]
+    assert F.juxt([double, triple, square]).([1, 2, 3]) == expected
+
   end
 end
