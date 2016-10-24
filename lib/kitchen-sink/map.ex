@@ -138,4 +138,67 @@ defmodule KitchenSink.Map do
   def rename_key(_,_,_) do
     %{}
   end
+
+  @doc """
+  takes in a list of keys, and a value. creates a nested map of each successive key nested as a child, with the most
+  nested map having the value `value` given to the funciton
+  """
+  def make_nested(key_list, value) do
+    key_list
+    |> Enum.reverse
+    |> Enum.reduce(value, fn (key, acc) -> %{key => acc} end)
+    |> Map.new
+  end
+
+  @doc """
+  Similar to rename_key, however this uses a `key_map` that is larger.
+
+  ```
+  key_map = %{
+    old_key1 => new_key1,
+    old_key2 => new_key2,
+  }
+  ```
+
+  If any of the values of the `key_map` are lists, then the output for that key will be a nested map based on the items
+  in the list.
+
+  The third argument is optional, if you use :prune then the Map returned will only contain the keys that are in the
+  ``key_map``
+
+  """
+  def remap_keys(map, key_map, prune: true) do
+    renamed_key = fn(map) ->
+      fn
+        ({old_key, [new_key]}) ->
+          value = Map.get(map, old_key)
+        %{new_key => value}
+
+        ({old_key, [root_key | key_list]}) ->
+          value = Map.get(map, old_key)
+        %{root_key => make_nested(key_list, value)}
+
+        ({old_key, new_key}) ->
+          value = Map.get(map, old_key)
+        %{new_key => value}
+      end
+    end
+
+    key_map
+    |> Enum.map(renamed_key.(map))
+    |> deep_merge
+  end
+
+  @doc """
+  Similar to rename_key/3
+
+  All of the keys that don't have a remapping are preserved in the returned Map
+  """
+  def remap_keys(map, key_map) do
+    map_without_renamed_keys = Map.drop(map, Map.keys(key_map))
+
+    map
+    |> remap_keys(key_map, prune: true)
+    |> deep_merge(map_without_renamed_keys)
+  end
 end
