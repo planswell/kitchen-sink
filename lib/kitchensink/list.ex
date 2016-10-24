@@ -4,13 +4,24 @@ defmodule KitchenSink.List do
   this module is for List functions
   """
 
+
   @doc """
-  This will take a 2D array and map all of it's indicies [x,y] -> [y,x]
+  takes a list of maps, transforms it into a map of maps with their value being the value_key. basically making a
+  look-up table.
   """
-  def transpose(matrix) when is_list(matrix) do
-    matrix
-    |> List.zip
-    |> Enum.map(&Tuple.to_list(&1))
+  def index_on(list_of_maps, take_keys, value_key) do
+    take_keys = MapSet.new(take_keys) |> MapSet.delete(value_key)
+    lookup_transform = fn(map) ->
+      {
+        Map.take(map, take_keys),
+        map[value_key]
+      }
+    end
+
+    list_of_maps
+    |> Enum.map(lookup_transform)
+    |> Map.new
   end
+
 
 end
