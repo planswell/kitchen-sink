@@ -138,4 +138,8 @@ defmodule KitchenSink.Map do
   def rename_key(_,_,_) do
     %{}
   end
+
+  def unquote(:"$handle_undefined_function")(function, args) do
+    apply(Map, function, args)
+  end
 end

@@ -23,5 +23,8 @@ defmodule KitchenSink.List do
     |> Map.new
   end
 
+  def unquote(:"$handle_undefined_function")(function, args) do
+    apply(List, function, args)
+  end
 
 end
