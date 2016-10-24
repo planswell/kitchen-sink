@@ -19,4 +19,9 @@ defmodule KitchenSink.Keyword do
   defp do_resolve(_, _left, right) do
     right
   end
+
+  def unquote(:"$handle_undefined_function")(function, args) do
+    apply(Keyword, function, args)
+  end
+
 end
