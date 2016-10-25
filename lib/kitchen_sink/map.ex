@@ -201,4 +201,43 @@ defmodule KitchenSink.Map do
     |> remap_keys(key_map, prune: true)
     |> deep_merge(map_without_renamed_keys)
   end
+
+  @doc """
+  transforms the values of a map based on a map of functions.
+
+  input is a map of keys to functions, representing a transformer-map.
+  %{
+  a: a_transform_fun,
+  b: b_transform_fun,
+  ...
+  }
+
+  output is a function that takes a map and applies each of the transformers in the transformer-map to the corresponding
+  value in the map, outputing a map where each key-value in the map has been transformed. prunes the map so only
+  transformed values are output.
+
+  fn(%{a:, b: ...}) -> %{a: a_transform_fun(a), b: b_transform_fun(b) ...}
+  """
+  def transform_values(transformer_map) do
+    fn(map) ->
+      transformer_map
+      |> Map.new(fn {key, transform} ->
+        original_value = Map.get(map, key)
+        {key, transform.(original_value)}
+      end)
+    end
+  end
+
+  @doc """
+  transforms the values of a map based on a map of functions.
+
+  similar to transform_values/1, however doesn't return a function.
+  """
+  def transform_values(map, transformer_map) do
+    transformer_map
+    |> Map.new(fn {key, transform} ->
+      original_value = Map.get(map, key)
+      {key, transform.(original_value)}
+    end)
+  end
 end
