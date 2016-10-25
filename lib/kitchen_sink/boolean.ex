@@ -8,7 +8,9 @@ defmodule KitchenSink.Boolean do
   Parse boolean either from string or integer, if it's not a boolean then it returns :error
   """
   def parse(st) when is_binary(st) do
-    String.downcase(st)
+    st
+    |> String.trim
+    |> String.downcase
     |> case do
       "true" -> true
       "false" -> false

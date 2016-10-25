@@ -20,6 +20,8 @@ defmodule KitchenSink.BooleanTest do
     assert Boolean.parse("y") === true
     assert Boolean.parse("n") === false
     assert Boolean.parse(1) === true
+    assert Boolean.parse(" TRUE ") === true
+    assert Boolean.parse(" FALSE ") === false
     assert Boolean.parse("falsy") === :error
     assert Boolean.parse(2) === :error
   end
