@@ -233,12 +233,11 @@ defmodule KitchenSink.Map do
 
   similar to transform_values/1, however doesn't return a function.
   """
-  def transform_values(transformer_map, map) do
+  def transform_values(map, transformer_map) do
     transformer_map
     |> Map.new(fn {key, transform} ->
       original_value = Map.get(map, key)
       {key, transform.(original_value)}
     end)
   end
-
 end

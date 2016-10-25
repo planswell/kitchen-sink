@@ -157,7 +157,7 @@ defmodule KitchenSink.MapTest do
     actual = KMap.transform_values(parsers).(input)
     assert actual == expected
 
-    actual = KMap.transform_values(parsers, input)
+    actual = KMap.transform_values(input, parsers)
     assert actual == expected
   end
 end
