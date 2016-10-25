@@ -203,6 +203,8 @@ defmodule KitchenSink.Map do
   end
 
   @doc """
+  transforms the values of a map based on a map of functions.
+
   input is a map of keys to functions, representing a transformer-map.
   %{
   a: a_transform_fun,
