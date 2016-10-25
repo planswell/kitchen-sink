@@ -227,4 +227,18 @@ defmodule KitchenSink.Map do
       end)
     end
   end
+
+  @doc """
+  transforms the values of a map based on a map of functions.
+
+  similar to transform_values/1, however doesn't return a function.
+  """
+  def transform_values(transformer_map, map) do
+    transformer_map
+    |> Map.new(fn {key, transform} ->
+      original_value = Map.get(map, key)
+      {key, transform.(original_value)}
+    end)
+  end
+
 end

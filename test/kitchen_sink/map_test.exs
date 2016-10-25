@@ -141,7 +141,7 @@ defmodule KitchenSink.MapTest do
     assert actual == expected
   end
 
-  test "map_parser" do
+  test "transform_values" do
 
     expected = %{age: 32, gender: :Female, multiplier: 28.71 , smoker?: :Smoker, term: 75}
     input = %{age: 32, gender: "Female", multiplier: "28.71", smoker?: "Smoker", term: "75.0"}
@@ -155,7 +155,9 @@ defmodule KitchenSink.MapTest do
     }
 
     actual = KMap.transform_values(parsers).(input)
+    assert actual == expected
 
+    actual = KMap.transform_values(parsers, input)
     assert actual == expected
   end
 end
