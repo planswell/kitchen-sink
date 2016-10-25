@@ -140,4 +140,22 @@ defmodule KitchenSink.MapTest do
     actual = KMap.deep_merge(user1, user2)
     assert actual == expected
   end
+
+  test "map_parser" do
+
+    expected = %{age: 32, gender: :Female, multiplier: 28.71 , smoker?: :Smoker, term: 75}
+    input = %{age: 32, gender: "Female", multiplier: "28.71", smoker?: "Smoker", term: "75.0"}
+
+    parsers = %{
+      age: fn x -> x end,
+      gender: &String.to_atom/1,
+      multiplier: &String.to_float/1,
+      smoker?: &String.to_atom/1,
+      term: &String.to_float/1,
+    }
+
+    actual = KMap.transform_values(parsers).(input)
+
+    assert actual == expected
+  end
 end
