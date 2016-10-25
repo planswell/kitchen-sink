@@ -12,6 +12,14 @@ defmodule KitchenSink.Boolean do
     |> case do
       "true" -> true
       "false" -> false
+      "t" -> true
+      "f" -> false
+      "on" -> true
+      "off" -> false
+      "yes" -> true
+      "no" -> false
+      "y" -> true
+      "n" -> false
       _ -> :error
     end
   end
