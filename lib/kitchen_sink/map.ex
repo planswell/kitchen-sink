@@ -258,25 +258,29 @@ defmodule KitchenSink.Map do
 
   fn(%{a:, b: ...}) -> %{a: a_transform_fun(a), b: b_transform_fun(b) ...}
   """
+  @lint {Credo.Check.Refactor.ABCSize false}
   def transform(map, key_value_transform_map, prune: true) do
+    transform_key_value = fn (map, key, transform_fun) ->
+      Map.get(map, key) |> transform_fun.()
+    end
     renamed_key = fn(map) ->
       fn
         # only transform values
         ({old_key, {transform_fun}}) ->
-          value = Map.get(map, old_key) |> transform_fun.()
-        %{old_key => value}
+          value = transform_key_value.(map, old_key, transform_fun)
+          %{old_key => value}
 
         # rename keys and transform values
         ({old_key, {[new_key], transform_fun}}) ->
-          value = Map.get(map, old_key) |> transform_fun.()
+          value = transform_key_value.(map, old_key, transform_fun)
           %{new_key => value}
 
         ({old_key, {[root_key | key_list], transform_fun}}) ->
-          value = Map.get(map, old_key) |> transform_fun.()
+          value = transform_key_value.(map, old_key, transform_fun)
           %{root_key => make_nested(key_list, value)}
 
         ({old_key, {new_key, transform_fun}}) ->
-          value = Map.get(map, old_key) |> transform_fun.()
+          value = transform_key_value.(map, old_key, transform_fun)
           %{new_key => value}
       end
     end
@@ -303,7 +307,7 @@ defmodule KitchenSink.Map do
   like transform/2, but returns a function that takes a Map to be transformed.
   """
   def transform(key_value_transform_map) do
-    fn (map)->
+    fn map ->
       transform(map, key_value_transform_map)
     end
   end
