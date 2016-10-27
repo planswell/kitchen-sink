@@ -261,6 +261,12 @@ defmodule KitchenSink.Map do
   def transform(map, key_value_transform_map, prune: true) do
     renamed_key = fn(map) ->
       fn
+        # only transform values
+        ({old_key, {transform_fun}}) ->
+          value = Map.get(map, old_key) |> transform_fun.()
+        %{old_key => value}
+
+        # rename keys and transform values
         ({old_key, {[new_key], transform_fun}}) ->
           value = Map.get(map, old_key) |> transform_fun.()
           %{new_key => value}

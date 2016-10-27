@@ -166,7 +166,7 @@ defmodule KitchenSink.MapTest do
 
     expected = %{
       new_age: 32,
-      new_gender: :Female,
+      gender: :Female,
       rate: %{inner_rate: 28.71},
       smoker!: :Smoker,
       term: 75}
@@ -180,10 +180,10 @@ defmodule KitchenSink.MapTest do
 
     transformation_map = %{
       age: {[:new_age], fn x -> x end},
-      gender: {:new_gender, &String.to_atom/1},
+      gender: {:gender, &String.to_atom/1},
       multiplier: {[:rate, :inner_rate],&String.to_float/1},
       smoker?: {:smoker! ,&String.to_atom/1},
-      term: {:term ,&String.to_float/1},
+      term: {&String.to_float/1},
     }
 
     actual = KMap.transform(input, transformation_map, prune: true)
