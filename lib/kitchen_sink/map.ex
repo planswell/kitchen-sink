@@ -240,4 +240,65 @@ defmodule KitchenSink.Map do
       {key, transform.(original_value)}
     end)
   end
+
+  @doc """
+  transforms the keys and values of a map based on a map or tuple {key_list, function}.
+
+  input is a map of keys to tuples {key_list, function}s, representing a transformer-map.
+  %{
+  a: {:new_key_name ,a_transform_fun},
+  b: {[:new, :nested, :key, :name], b_transform_fun},
+  ...
+  }
+
+  output is a transformed Map, or function that takes a Map.  the output Map is made from appling each of the
+  transformers in the transformer-map to the corresponding keys and values in the Map, outputing a Map where each
+  key-value in the Map has been transformed. supplying `prune: true` prunes the map so only transformed values are
+  output.
+
+  fn(%{a:, b: ...}) -> %{a: a_transform_fun(a), b: b_transform_fun(b) ...}
+  """
+  def transform(map, key_value_transform_map, prune: true) do
+    renamed_key = fn(map) ->
+      fn
+        ({old_key, {[new_key], transform_fun}}) ->
+          value = Map.get(map, old_key) |> transform_fun.()
+          %{new_key => value}
+
+        ({old_key, {[root_key | key_list], transform_fun}}) ->
+          value = Map.get(map, old_key) |> transform_fun.()
+          %{root_key => make_nested(key_list, value)}
+
+        ({old_key, {new_key, transform_fun}}) ->
+          value = Map.get(map, old_key) |> transform_fun.()
+          %{new_key => value}
+      end
+    end
+
+    key_value_transform_map
+    |> Enum.map(renamed_key.(map))
+    |> deep_merge
+  end
+
+  @doc """
+  like transform/3 but doesn't prune the output Map, preserving key value pairs that are not part of the
+  transformation_map
+  """
+  def transform(map, key_value_transform_map) do
+    keys_to_transform = Map.keys(key_value_transform_map)
+    map_without_transformed_keys = map |> Map.drop(keys_to_transform)
+
+    map
+    |> transform(key_value_transform_map, prune: true)
+    |> deep_merge(map_without_transformed_keys)
+  end
+
+  @doc """
+  like transform/2, but returns a function that takes a Map to be transformed.
+  """
+  def transform(key_value_transform_map) do
+    fn (map)->
+      transform(map, key_value_transform_map)
+    end
+  end
 end

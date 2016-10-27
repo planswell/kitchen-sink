@@ -160,4 +160,48 @@ defmodule KitchenSink.MapTest do
     actual = KMap.transform_values(input, parsers)
     assert actual == expected
   end
+
+
+  test "transform" do
+
+    expected = %{
+      new_age: 32,
+      new_gender: :Female,
+      rate: %{inner_rate: 28.71},
+      smoker!: :Smoker,
+      term: 75}
+
+    input = %{
+      age: 32,
+      gender: "Female",
+      multiplier: "28.71",
+      smoker?: "Smoker",
+      term: "75.0"}
+
+    transformation_map = %{
+      age: {[:new_age], fn x -> x end},
+      gender: {:new_gender, &String.to_atom/1},
+      multiplier: {[:rate, :inner_rate],&String.to_float/1},
+      smoker?: {:smoker! ,&String.to_atom/1},
+      term: {:term ,&String.to_float/1},
+    }
+
+    actual = KMap.transform(input, transformation_map, prune: true)
+    assert actual == expected
+
+    actual = KMap.transform(input, transformation_map)
+    assert actual == expected
+
+    actual = KMap.transform(transformation_map).(input)
+    assert actual == expected
+
+    #testing unprocessed values are preserved
+    input = Map.put_new(input, :abc, 123)
+    expected = Map.put_new(expected, :abc, 123)
+    actual = KMap.transform(input, transformation_map)
+    assert actual == expected
+
+  end
+
+
 end
