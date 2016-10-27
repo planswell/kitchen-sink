@@ -244,22 +244,24 @@ defmodule KitchenSink.Map do
   @doc """
   transforms the keys and values of a map based on a map or tuple {key_list, function}.
 
-  input is a map of keys to tuples {key_list, function}s, representing a transformer-map.
-  %{
-  a: {:new_key_name ,a_transform_fun},
-  b: {[:new, :nested, :key, :name], b_transform_fun},
-  ...
-  }
+  input is a map of keys to tuples `{key_list, function}`, representing a transformer-map.
 
-  output is a transformed Map, or function that takes a Map.  the output Map is made from appling each of the
+  key_list = any || [any, ...]
+  function = (any -> any)
+
+  ## Examples
+
+       iex> KitchenSink.Map.transform(%{b: 0.9876}, %{b: {[:b1, :b2], &Float.round(&1, 2)}}, prune: true)
+       %{b1: %{b2: 0.99}}
+
+  output is a transformed Map.  the output Map is made from appling each of the
   transformers in the transformer-map to the corresponding keys and values in the Map, outputing a Map where each
   key-value in the Map has been transformed. supplying `prune: true` prunes the map so only transformed values are
   output.
-
-  fn(%{a:, b: ...}) -> %{a: a_transform_fun(a), b: b_transform_fun(b) ...}
   """
-  @lint {Credo.Check.Refactor.ABCSize false}
-  def transform(map, key_value_transform_map, prune: true) do
+  @lint {Credo.Check.Refactor.ABCSize, false}
+  @spec transform(Map.t, Map.t, Keyword.t) :: Map.t
+  def transform(map, key_value_transform_map, [prune: true] = _opts) do
     transform_key_value = fn (map, key, transform_fun) ->
       Map.get(map, key) |> transform_fun.()
     end
@@ -293,7 +295,18 @@ defmodule KitchenSink.Map do
   @doc """
   like transform/3 but doesn't prune the output Map, preserving key value pairs that are not part of the
   transformation_map
+
+  ## Examples
+
+      iex> KitchenSink.Map.transform(%{a: 1, b: 0.9876}, %{b: {[:b1, :b2], &Float.round(&1, 2)}})
+      %{a: 1, b1: %{b2: 0.99}}
+
+  output is a transformed Map.  the output Map is made from appling each of the
+  transformers in the transformer-map to the corresponding keys and values in the Map, outputing a Map where each
+  key-value in the Map has been transformed. supplying `prune: true` prunes the map so only transformed values are
+  output.
   """
+  @spec transform(Map.t, Map.t) :: Map.t
   def transform(map, key_value_transform_map) do
     keys_to_transform = Map.keys(key_value_transform_map)
     map_without_transformed_keys = map |> Map.drop(keys_to_transform)
@@ -305,6 +318,15 @@ defmodule KitchenSink.Map do
 
   @doc """
   like transform/2, but returns a function that takes a Map to be transformed.
+
+  ## Examples
+
+  iex> KitchenSink.Map.transform(%{b: {[:b1, :b2], &Float.round(&1, 2)}}).(%{a: 1, b: 0.9876})
+  %{a: 1, b1: %{b2: 0.99}}
+
+  output is a function that takes a Map.  the output Map is made from appling each of the
+  transformers in the transformer-map to the corresponding keys and values in the Map, outputing a Map where each
+  key-value in the Map has been transformed.
   """
   def transform(key_value_transform_map) do
     fn map ->
