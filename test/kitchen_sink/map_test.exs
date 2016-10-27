@@ -186,7 +186,8 @@ defmodule KitchenSink.MapTest do
       term: {&String.to_float/1},
     }
 
-    actual = KMap.transform(input, transformation_map, prune: true)
+    fat_input = Map.put_new(input, :a, :a)
+    actual = KMap.transform(fat_input, transformation_map, prune: true)
     assert actual == expected
 
     actual = KMap.transform(input, transformation_map)
