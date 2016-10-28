@@ -167,6 +167,7 @@ defmodule KitchenSink.Map do
   ``key_map``
 
   """
+  def remap_keys(_map, key_map, prune: true) when map_size(key_map) === 0, do: %{}
   def remap_keys(map, key_map, prune: true) do
     renamed_key = fn(map) ->
       fn

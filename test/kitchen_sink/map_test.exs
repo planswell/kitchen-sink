@@ -119,6 +119,7 @@ defmodule KitchenSink.MapTest do
 
     assert KMap.remap_keys(input, key_map) == expected
     assert KMap.remap_keys(input, key_map, prune: true) == expected2
+    assert KMap.remap_keys(%{a: 1}, %{}, prune: true) == %{}
   end
 
   defmodule TestMap do
