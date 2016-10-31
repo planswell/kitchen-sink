@@ -4,7 +4,6 @@ defmodule KitchenSink.List do
   this module is for List functions
   """
 
-
   @doc """
   takes a list of maps, transforms it into a map of maps with their value being the value_key. basically making a
   look-up table.
@@ -22,6 +21,4 @@ defmodule KitchenSink.List do
     |> Enum.map(lookup_transform)
     |> Map.new
   end
-
-
 end
