@@ -22,4 +22,11 @@ defmodule KitchenSink.ListTest do
     assert L.index_on(input, [:a], :b) == expected
     assert L.index_on(input, :a, :b) == expected
   end
+
+  test "List.fill" do
+    expected = [1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3]
+    input = [1, "", "", "", "", 2, "", "", "", 3, "", "", ""]
+
+    assert expected == L.fill(input, "")
+  end
 end
