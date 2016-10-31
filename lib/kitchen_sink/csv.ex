@@ -16,16 +16,16 @@ defmodule KitchenSink.Csv do
   def fill(sparse_list, empty_matcher) do
     sparse_list_length = Enum.count(sparse_list)
 
-    {values, indecies} =
+    {values, indices} =
       sparse_list
       |> Enum.with_index
       |> Enum.reject(&match?({^empty_matcher, _}, &1))
       |> Enum.unzip
 
-    indecies
+    indices
     |> Enum.drop(1)
     |> Enum.concat([sparse_list_length])
-    |> Enum.zip(indecies)
+    |> Enum.zip(indices)
     |> Enum.map(fn {last, start} -> last - start end)
     |> Enum.zip(values)
     |> Enum.flat_map(fn {amount, value} -> List.duplicate(value, amount) end)
