@@ -1,4 +1,4 @@
-defmodule KitchenSink.Csv do
+defmodule KitchenSink.CSV do
 
   @moduledoc """
   This module is for CSV helper functions.
@@ -10,7 +10,7 @@ defmodule KitchenSink.Csv do
 
   ## Example
 
-       iex> KitchenSink.Csv.fill([1,"","",2,"",3,""], "")
+       iex> KitchenSink.CSV.fill([1,"","",2,"",3,""], "")
        [1,1,1,2,2,3,3]
   """
   def fill(sparse_list, empty_matcher) do
