@@ -143,7 +143,7 @@ defmodule KitchenSink.Map do
   takes in a list of keys, and a value. creates a nested map of each successive key nested as a child, with the most
   nested map having the value `value` given to the funciton
   """
-  def make_nested(key_list, value) do
+  def make_nested(value, key_list) do
     key_list
     |> Enum.reverse
     |> Enum.reduce(value, fn (key, acc) -> %{key => acc} end)
@@ -177,7 +177,7 @@ defmodule KitchenSink.Map do
 
         ({old_key, [root_key | key_list]}) ->
           value = Map.get(map, old_key)
-        %{root_key => make_nested(key_list, value)}
+        %{root_key => make_nested(value, key_list)}
 
         ({old_key, new_key}) ->
           value = Map.get(map, old_key)
@@ -280,7 +280,7 @@ defmodule KitchenSink.Map do
 
         ({old_key, {[root_key | key_list], transform_fun}}) ->
           value = transform_key_value.(map, old_key, transform_fun)
-          %{root_key => make_nested(key_list, value)}
+          %{root_key => make_nested(value, key_list)}
 
         ({old_key, {new_key, transform_fun}}) ->
           value = transform_key_value.(map, old_key, transform_fun)

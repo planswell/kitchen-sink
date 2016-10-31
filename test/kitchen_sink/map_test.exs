@@ -79,7 +79,7 @@ defmodule KitchenSink.MapTest do
 
   test "new nested key" do
     expected = %{parent: %{child: %{conception: "kenbert this is for you"}}}
-    actual = KMap.make_nested([:parent, :child, :conception], "kenbert this is for you")
+    actual = KMap.make_nested("kenbert this is for you", [:parent, :child, :conception])
 
     assert expected == actual
   end
@@ -204,6 +204,4 @@ defmodule KitchenSink.MapTest do
     assert actual == expected
 
   end
-
-
 end
