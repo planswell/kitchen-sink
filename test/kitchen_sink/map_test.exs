@@ -207,18 +207,17 @@ defmodule KitchenSink.MapTest do
   test "key paths" do
 
     input = %{a: 1, c: 2, d: 3}
-    expected = [:a, :c, :d]
+    expected = [[:a], [:c], [:d]]
     actual = KMap.key_paths(input)
 
     assert expected == actual
 
 
-
-    input = %{a: %{b: 1, c: 2}, d: 3}
+    input = %{a: %{b: %{c: 1}, c: 2}, d: 3}
     expected = [
-      [:a, :b],
+      [:a, :b, :c],
       [:a, :c],
-      :d
+      [:d],
     ]
     actual = KMap.key_paths(input)
     assert expected == actual

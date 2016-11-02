@@ -338,11 +338,13 @@ defmodule KitchenSink.Map do
 
 
   defp do_key_paths({key, value}) when is_map(value) do
-    sub_keys = key_paths(value) |> Enum.map(&List.wrap/1)
+    sub_keys =
+      key_paths(value)
+
     Enum.map(sub_keys, &Enum.concat([key], &1))
   end
-  defp do_key_paths({key, value}) do
-    [key]
+  defp do_key_paths({key, _value}) do
+    [[key]]
   end
 
   @doc """
@@ -352,9 +354,9 @@ defmodule KitchenSink.Map do
   `get_in(my_map, [:a, :b, :c])`
 
   ## Example
-
        iex> KitchenSink.Map.key_paths(%{a: %{b: 1, c: 2}, d: 3})
-       [[:a, :b], [:a, :c], :d]
+       [[:a, :b], [:a, :c], [:d]]
+
   """
   def key_paths(map) do
     Enum.flat_map(map, &do_key_paths/1)
