@@ -202,6 +202,25 @@ defmodule KitchenSink.MapTest do
     expected = Map.put_new(expected, :abc, 123)
     actual = KMap.transform(input, transformation_map)
     assert actual == expected
+  end
 
+  test "key paths" do
+
+    input = %{a: 1, c: 2, d: 3}
+    expected = [:a, :c, :d]
+    actual = KMap.key_paths(input)
+
+    assert expected == actual
+
+
+
+    input = %{a: %{b: 1, c: 2}, d: 3}
+    expected = [
+      [:a, :b],
+      [:a, :c],
+      :d
+    ]
+    actual = KMap.key_paths(input)
+    assert expected == actual
   end
 end
