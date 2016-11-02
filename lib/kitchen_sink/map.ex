@@ -338,8 +338,7 @@ defmodule KitchenSink.Map do
 
 
   defp do_key_paths({key, value}) when is_map(value) do
-    sub_keys =
-      key_paths(value)
+    sub_keys = key_paths(value)
 
     Enum.map(sub_keys, &Enum.concat([key], &1))
   end
