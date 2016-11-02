@@ -334,4 +334,30 @@ defmodule KitchenSink.Map do
       transform(map, key_value_transform_map)
     end
   end
+
+
+
+  defp do_key_paths({key, value}) when is_map(value) do
+    sub_keys = key_paths(value)
+
+    Enum.map(sub_keys, &Enum.concat([key], &1))
+  end
+  defp do_key_paths({key, _value}) do
+    [[key]]
+  end
+
+  @doc """
+  Takes a Map and returns a List of Paths.
+
+  A Path is a list of keys that you can use to access a leaf node/value in a Map. Useful with `get_in` Access syntax.
+  `get_in(my_map, [:a, :b, :c])`
+
+  ## Example
+       iex> KitchenSink.Map.key_paths(%{a: %{b: 1, c: 2}, d: 3})
+       [[:a, :b], [:a, :c], [:d]]
+
+  """
+  def key_paths(map) do
+    Enum.flat_map(map, &do_key_paths/1)
+  end
 end
