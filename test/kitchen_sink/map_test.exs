@@ -38,6 +38,12 @@ defmodule KitchenSink.MapTest do
     assert KMap.deep_merge([%{a: %{b: %{c: %{d: 1}}}}, %{a: %{z: 1}}]) == %{a: %{b: %{c: %{d: 1}}, z: 1}}
   end
 
+  test "map with list" do
+    assert KMap.deep_merge(%{a: [%{b: 1}, %{c: 2}]}, %{a: [%{d: 3}, %{e: 4}]}) == %{a: [%{b: 1, d: 3}, %{c: 2, e: 4}]}
+    assert KMap.deep_merge(%{a: [%{b: 1}, %{c: 2}, %{f: 5}]}, %{a: [%{d: 3}, %{e: 4}]}) == %{a: [%{b: 1, d: 3}, %{c: 2, e: 4}, %{f: 5}]}
+    assert KMap.deep_merge(%{a: [%{b: 1}, %{c: 2}]}, %{a: [%{d: 3}, %{e: 4}, %{f: 5}]}) == %{a: [%{b: 1, d: 3}, %{c: 2, e: 4}, %{f: 5}]}
+  end
+
   test "empty map rename produce empty map" do
     assert KMap.rename_key(%{}, :a, :b) == %{}
     assert KMap.rename_key(%{}, {:a, :b}) == %{}
