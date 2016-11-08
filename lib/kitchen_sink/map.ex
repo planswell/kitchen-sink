@@ -61,10 +61,31 @@ defmodule KitchenSink.Map do
     Map.merge(left, right, &do_deep_resolve/3)
   end
 
+  # Checks if one list has more items than the other and passes the rest through
+  defp list_match_length(list, left, right) when length(left) > length(right) do
+    rest = Enum.take(left, length(right) - length(left))
+    list ++ rest
+  end
+  defp list_match_length(list, left, right) when length(right) > length(left) do
+    rest = Enum.take(right, length(left) - length(right))
+    list ++ rest
+  end
+  defp list_match_length(list, _left, _right), do: list
+
   # Key exists in both maps, and both values are maps as well.
   # These can be merged recursively.
   defp do_deep_resolve(_key, left = %{}, right = %{}) do
     do_deep_merge(left, right)
+  end
+
+  # We merge two lists so that each item gets checked and merged.
+  # If there is more items in either then it gets passed through.
+  defp do_deep_resolve(_key, left_list, right_list) when is_list(left_list) and is_list(right_list) do
+    left_right_list = Enum.zip(left_list, right_list)
+    Enum.map(left_right_list, fn {left, right} ->
+      do_deep_merge(left, right)
+    end)
+    |> list_match_length(left_list, right_list)
   end
 
   # Key exists in both maps, but at least one of the values is
@@ -262,10 +283,11 @@ defmodule KitchenSink.Map do
   """
   @lint {Credo.Check.Refactor.ABCSize, false}
   @spec transform(Map.t, Map.t, Keyword.t) :: Map.t
-  def transform(map, key_value_transform_map, [prune: true] = _opts) do
+  def transform(map, transformation_map, [prune: true] = _opts) do
     transform_key_value = fn (map, key, transform_fun) ->
       Map.get(map, key) |> transform_fun.()
     end
+
     renamed_key = fn(map) ->
       fn
         # only transform values
@@ -288,7 +310,13 @@ defmodule KitchenSink.Map do
       end
     end
 
-    key_value_transform_map
+    t_map_keys = Map.keys(transformation_map)
+    input_map_keys = Map.keys(map)
+    # you can do t_map_keys -- input_map_keys here, but this is faster for large maps.
+    keys_to_drop = MapSet.difference(MapSet.new(t_map_keys), MapSet.new(input_map_keys))
+    cleaned_t_map = Map.drop(transformation_map, keys_to_drop)
+
+    cleaned_t_map
     |> Enum.map(renamed_key.(map))
     |> deep_merge
   end
@@ -308,12 +336,12 @@ defmodule KitchenSink.Map do
   output.
   """
   @spec transform(Map.t, Map.t) :: Map.t
-  def transform(map, key_value_transform_map) do
-    keys_to_transform = Map.keys(key_value_transform_map)
+  def transform(map, transformation_map) do
+    keys_to_transform = Map.keys(transformation_map)
     map_without_transformed_keys = map |> Map.drop(keys_to_transform)
 
     map
-    |> transform(key_value_transform_map, prune: true)
+    |> transform(transformation_map, prune: true)
     |> deep_merge(map_without_transformed_keys)
   end
 
@@ -329,9 +357,9 @@ defmodule KitchenSink.Map do
   transformers in the transformer-map to the corresponding keys and values in the Map, outputing a Map where each
   key-value in the Map has been transformed.
   """
-  def transform(key_value_transform_map) do
+  def transform(transformation_map) do
     fn map ->
-      transform(map, key_value_transform_map)
+      transform(map, transformation_map)
     end
   end
 

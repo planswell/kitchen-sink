@@ -38,6 +38,16 @@ defmodule KitchenSink.MapTest do
     assert KMap.deep_merge([%{a: %{b: %{c: %{d: 1}}}}, %{a: %{z: 1}}]) == %{a: %{b: %{c: %{d: 1}}, z: 1}}
   end
 
+  test "map with list" do
+    assert KMap.deep_merge(%{a: [%{b: 1}, %{c: 2}]}, %{a: [%{d: 3}, %{e: 4}]}) == %{a: [%{b: 1, d: 3}, %{c: 2, e: 4}]}
+    assert KMap.deep_merge(%{a: [%{b: 1}, %{c: 2}, %{f: 5}]}, %{a: [%{d: 3}, %{e: 4}]}) == %{a: [%{b: 1, d: 3}, %{c: 2, e: 4}, %{f: 5}]}
+    assert KMap.deep_merge(%{a: [%{b: 1}, %{c: 2}]}, %{a: [%{d: 3}, %{e: 4}, %{f: 5}]}) == %{a: [%{b: 1, d: 3}, %{c: 2, e: 4}, %{f: 5}]}
+    assert KMap.deep_merge(%{a: []}, %{a: [%{d: 3}, %{e: 4}, %{f: 5}]}) == %{a: [%{d: 3}, %{e: 4}, %{f: 5}]}
+    assert KMap.deep_merge(%{a: [%{b: 1}, %{c: 2}]}, %{a: []}) == %{a: [%{b: 1}, %{c: 2}]}
+    assert KMap.deep_merge(%{a: nil}, %{a: [%{d: 3}, %{e: 4}, %{f: 5}]}) == %{a: [%{d: 3}, %{e: 4}, %{f: 5}]}
+    assert KMap.deep_merge(%{a: [%{b: 1}, %{c: 2}]}, %{a: nil}) == %{a: nil}
+  end
+
   test "empty map rename produce empty map" do
     assert KMap.rename_key(%{}, :a, :b) == %{}
     assert KMap.rename_key(%{}, {:a, :b}) == %{}
@@ -162,47 +172,6 @@ defmodule KitchenSink.MapTest do
     assert actual == expected
   end
 
-
-  test "transform" do
-
-    expected = %{
-      new_age: 32,
-      gender: :Female,
-      rate: %{inner_rate: 28.71},
-      smoker!: :Smoker,
-      term: 75}
-
-    input = %{
-      age: 32,
-      gender: "Female",
-      multiplier: "28.71",
-      smoker?: "Smoker",
-      term: "75.0"}
-
-    transformation_map = %{
-      age: {[:new_age], fn x -> x end},
-      gender: {:gender, &String.to_atom/1},
-      multiplier: {[:rate, :inner_rate],&String.to_float/1},
-      smoker?: {:smoker! ,&String.to_atom/1},
-      term: {&String.to_float/1},
-    }
-
-    fat_input = Map.put_new(input, :a, :a)
-    actual = KMap.transform(fat_input, transformation_map, prune: true)
-    assert actual == expected
-
-    actual = KMap.transform(input, transformation_map)
-    assert actual == expected
-
-    actual = KMap.transform(transformation_map).(input)
-    assert actual == expected
-
-    #testing unprocessed values are preserved
-    input = Map.put_new(input, :abc, 123)
-    expected = Map.put_new(expected, :abc, 123)
-    actual = KMap.transform(input, transformation_map)
-    assert actual == expected
-  end
 
   test "key paths" do
 
