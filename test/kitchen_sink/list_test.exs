@@ -22,4 +22,30 @@ defmodule KitchenSink.ListTest do
     assert L.index_on(input, [:a], :b) == expected
     assert L.index_on(input, :a, :b) == expected
   end
+
+  test "pluck" do
+
+    input = [%{a: 1}, %{a: 2}, %{a: 3}]
+    expected = [1, 2, 3]
+
+    actual = L.pluck(input, :a)
+
+    assert expected == actual
+
+
+    input = [%{b: 1}, %{a: 2}, %{a: 3}]
+    expected = [nil, 2, 3]
+
+    actual = L.pluck(input, :a)
+
+    assert expected == actual
+
+
+    input = []
+    expected = []
+
+    actual = L.pluck(input, :a)
+
+    assert expected == actual
+  end
 end

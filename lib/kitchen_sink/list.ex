@@ -21,4 +21,13 @@ defmodule KitchenSink.List do
     |> Enum.map(lookup_transform)
     |> Map.new
   end
+
+  @doc """
+  A convenient version of what is perhaps the most common use-case for map: extracting a list of property values.
+
+  With a List of Maps, extract 1 value defined by the key you give to pluck.
+  """
+  def pluck(list_of_maps, key) do
+    Enum.map(list_of_maps, &Map.get(&1, key))
+  end
 end
