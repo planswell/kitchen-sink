@@ -61,10 +61,31 @@ defmodule KitchenSink.Map do
     Map.merge(left, right, &do_deep_resolve/3)
   end
 
+  # Checks if one list has more items than the other and passes the rest through
+  defp list_match_length(list, left, right) when length(left) > length(right) do
+    rest = Enum.take(left, length(right) - length(left))
+    list ++ rest
+  end
+  defp list_match_length(list, left, right) when length(right) > length(left) do
+    rest = Enum.take(right, length(left) - length(right))
+    list ++ rest
+  end
+  defp list_match_length(list, _left, _right), do: list
+
   # Key exists in both maps, and both values are maps as well.
   # These can be merged recursively.
   defp do_deep_resolve(_key, left = %{}, right = %{}) do
     do_deep_merge(left, right)
+  end
+
+  # We merge two lists so that each item gets checked and merged.
+  # If there is more items in either then it gets passed through.
+  defp do_deep_resolve(_key, left_list, right_list) when is_list(left_list) and is_list(right_list) do
+    left_right_list = Enum.zip(left_list, right_list)
+    Enum.map(left_right_list, fn {left, right} ->
+      do_deep_merge(left, right)
+    end)
+    |> list_match_length(left_list, right_list)
   end
 
   # Key exists in both maps, but at least one of the values is
