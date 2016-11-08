@@ -42,6 +42,10 @@ defmodule KitchenSink.MapTest do
     assert KMap.deep_merge(%{a: [%{b: 1}, %{c: 2}]}, %{a: [%{d: 3}, %{e: 4}]}) == %{a: [%{b: 1, d: 3}, %{c: 2, e: 4}]}
     assert KMap.deep_merge(%{a: [%{b: 1}, %{c: 2}, %{f: 5}]}, %{a: [%{d: 3}, %{e: 4}]}) == %{a: [%{b: 1, d: 3}, %{c: 2, e: 4}, %{f: 5}]}
     assert KMap.deep_merge(%{a: [%{b: 1}, %{c: 2}]}, %{a: [%{d: 3}, %{e: 4}, %{f: 5}]}) == %{a: [%{b: 1, d: 3}, %{c: 2, e: 4}, %{f: 5}]}
+    assert KMap.deep_merge(%{a: []}, %{a: [%{d: 3}, %{e: 4}, %{f: 5}]}) == %{a: [%{d: 3}, %{e: 4}, %{f: 5}]}
+    assert KMap.deep_merge(%{a: [%{b: 1}, %{c: 2}]}, %{a: []}) == %{a: [%{b: 1}, %{c: 2}]}
+    assert KMap.deep_merge(%{a: nil}, %{a: [%{d: 3}, %{e: 4}, %{f: 5}]}) == %{a: [%{d: 3}, %{e: 4}, %{f: 5}]}
+    assert KMap.deep_merge(%{a: [%{b: 1}, %{c: 2}]}, %{a: nil}) == %{a: nil}
   end
 
   test "empty map rename produce empty map" do
