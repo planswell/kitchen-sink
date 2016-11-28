@@ -394,7 +394,7 @@ defmodule KitchenSink.Map do
   Takes a list of tuples of path(s) that describe from->to remappings of an object
 
   one can consider this to be like remap_keys or Map.take, but for nested keys.  for each tuple of paths, the value of
-  the first path will move to the second path. if there is only one path provided, then this will ack more like Map.take
+  the first path will move to the second path. if there is only one path provided, then this will act more like Map.take
 
   ## Example
        iex> KitchenSink.Map.remapper(%{a: %{b: 1, c: 2}, d: 3}, [{[:a, :c]}])
