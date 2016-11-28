@@ -388,4 +388,43 @@ defmodule KitchenSink.Map do
   def key_paths(map) do
     Enum.flat_map(map, &do_key_paths/1)
   end
+
+
+  @doc """
+  Takes a list of tuples of path(s) that describe from->to remappings of an object
+
+  one can consider this to be like remap_keys or Map.take, but for nested keys.  for each tuple of paths, the value of
+  the first path will move to the second path. if there is only one path provided, then this will act more like Map.take
+
+  ## Example
+       iex> KitchenSink.Map.remapper(%{a: %{b: 1, c: 2}, d: 3}, [{[:a, :c]}])
+       %{a: %{c: 2}}
+
+       iex> KitchenSink.Map.remapper(%{a: %{b: 1, c: 2}, d: 3}, [{[:a, :c], [:d, :z]}])
+       %{d: %{z: 2}}
+
+       iex> KitchenSink.Map.remapper(%{a: %{b: 1, c: 2}, d: 3}, [{[:e], [:d, :c]}])
+       %{}
+
+  This function prunes the input map
+  """
+  def remapper(map, remap_list, lookup_nil_val \\ %{}) do
+    remap_helper = fn {from_path, to_path} ->
+      val = get_in(map, from_path)
+
+      case val do
+        nil -> lookup_nil_val
+        _ -> make_nested(val, to_path)
+      end
+    end
+
+    remap = fn
+      {from_path} -> remap_helper.({from_path, from_path})
+      {_from_path, _to_path} = from_to -> remap_helper.(from_to)
+    end
+
+    remap_list
+    |> Enum.map(remap)
+    |> deep_merge
+  end
 end
