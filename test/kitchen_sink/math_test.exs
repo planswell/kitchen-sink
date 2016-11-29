@@ -4,7 +4,7 @@ defmodule KitchenSink.MathTest do
   use ExUnit.Case
   import KitchenSink.Math
 
-  doctest KitchenSink.Math
+  doctest KitchenSink.Math, import: true
 
   test "div function" do
     assert 0 == div(0, 0, 0)
