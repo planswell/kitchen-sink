@@ -364,7 +364,9 @@ defmodule KitchenSink.Map do
   end
 
 
-
+  defp do_key_paths({key, %{__struct__: _} = value}) do
+    [[key]]
+  end
   defp do_key_paths({key, value}) when is_map(value) do
     sub_keys = key_paths(value)
 
@@ -385,7 +387,7 @@ defmodule KitchenSink.Map do
        [[:a, :b], [:a, :c], [:d]]
 
   """
-  def key_paths(map) do
+  def key_paths(map) when is_map(map) do
     Enum.flat_map(map, &do_key_paths/1)
   end
 
