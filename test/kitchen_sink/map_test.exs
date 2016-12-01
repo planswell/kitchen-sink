@@ -172,23 +172,39 @@ defmodule KitchenSink.MapTest do
     assert actual == expected
   end
 
+  describe "Map.key_paths/1" do
+    test "no nesting" do
 
-  test "key paths" do
+      input = %{a: 1, c: 2, d: 3}
+      expected = [[:a], [:c], [:d]]
+      actual = KMap.key_paths(input)
 
-    input = %{a: 1, c: 2, d: 3}
-    expected = [[:a], [:c], [:d]]
-    actual = KMap.key_paths(input)
+      assert expected == actual
+    end
 
-    assert expected == actual
+    test "nesting" do
+      input = %{a: %{b: %{c: 1}, c: 2}, d: 3}
+      expected = [
+        [:a, :b, :c],
+        [:a, :c],
+        [:d],
+      ]
+      actual = KMap.key_paths(input)
+      assert expected == actual
+    end
 
+    test "non-enumerables in map" do
+      input = %{c: ~D[2000-01-01]}
 
-    input = %{a: %{b: %{c: 1}, c: 2}, d: 3}
-    expected = [
-      [:a, :b, :c],
-      [:a, :c],
-      [:d],
-    ]
-    actual = KMap.key_paths(input)
-    assert expected == actual
+      expected = [[:c]]
+      actual = KMap.key_paths(input)
+      assert expected == actual
+
+      input = %{a: %{b: %{c: ~D[2000-01-01]}}}
+
+      expected = [[:a, :b, :c]]
+      actual = KMap.key_paths(input)
+      assert expected == actual
+    end
   end
 end
