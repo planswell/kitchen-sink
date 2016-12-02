@@ -23,10 +23,13 @@ defmodule KitchenSink.Mixfile do
       # Docs
       name: "KitchenSink",
       docs: [source_ref: "v#{@version}", main: "KitchenSink", source_url: @repo_url,  extras: ["README.md"]],
-
+      elixirc_paths: elixirc_paths(Mix.env),
       dialyzer: [plt_add_deps: :transitive],
     ]
   end
+
+  defp elixirc_paths(:test), do: ["lib","test/support"]
+  defp elixirc_paths(_),     do: ["lib"]
 
   def application do
     [
