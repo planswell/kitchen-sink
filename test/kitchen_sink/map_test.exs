@@ -152,6 +152,17 @@ defmodule KitchenSink.MapTest do
     assert actual == expected
   end
 
+  test "Don't pollute structs when trying to merge invalid keys" do
+    user1 = %TestMap{name: "User 1"}
+    user2 = %{
+      name: "John Appleseed",
+      address: "1 Infinite Loop, Cupertino, CA 95014, USA"
+    }
+    expected = %TestMap{name: "John Appleseed"}
+    actual = KMap.deep_merge(user1, user2)
+    assert actual == expected
+  end
+
   test "transform_values" do
 
     expected = %{age: 32, gender: :Female, multiplier: 28.71 , smoker?: :Smoker, term: 75}
