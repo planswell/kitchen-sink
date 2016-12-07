@@ -8,8 +8,6 @@ defmodule KitchenSink.Boolean do
   defp string_bool?("false"), do: false
   defp string_bool?("t"), do: true
   defp string_bool?("f"), do: false
-  defp string_bool?("on"), do: true
-  defp string_bool?("off"), do: false
   defp string_bool?("yes"), do: true
   defp string_bool?("no"), do: false
   defp string_bool?("y"), do: true

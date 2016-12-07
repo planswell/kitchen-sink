@@ -13,8 +13,6 @@ defmodule KitchenSink.BooleanTest do
     assert Boolean.parse("false") === false
     assert Boolean.parse("t") === true
     assert Boolean.parse("f") === false
-    assert Boolean.parse("on") === true
-    assert Boolean.parse("off") === false
     assert Boolean.parse("yes") === true
     assert Boolean.parse("no") === false
     assert Boolean.parse("y") === true
