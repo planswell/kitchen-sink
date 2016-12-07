@@ -56,7 +56,6 @@ defmodule KitchenSink.Map do
     right = clean_struct(right)
     do_deep_merge(left, right)
   end
-
   # When the left argument is a struct, ensure that its own keys are the only
   # ones considered for the merge.
   # This guarantees that we don't convert it into a map containing new keys.
@@ -68,7 +67,6 @@ defmodule KitchenSink.Map do
       end
     end, left)
   end
-
   defp do_deep_merge(left, right) do
     Map.merge(left, right, &do_deep_resolve/3)
   end
