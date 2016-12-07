@@ -374,7 +374,7 @@ defmodule KitchenSink.Map do
   end
 
 
-  defp do_key_paths({key, %{__struct__: _} = value}) do
+  defp do_key_paths({key, %{__struct__: _}}) do
     [[key]]
   end
   defp do_key_paths({key, value}) when is_map(value) do
