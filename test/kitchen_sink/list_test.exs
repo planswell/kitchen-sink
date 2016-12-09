@@ -48,4 +48,22 @@ defmodule KitchenSink.ListTest do
 
     assert expected == actual
   end
+
+  describe "index_by/2" do
+    test "index by key"do
+      expected = %{
+        a: %{name: :a, other: 1},
+        b: %{name: :b, other: 4}
+      }
+
+      input = [
+        %{name: :a, other: 1},
+        %{name: :b, other: 4}
+      ]
+
+      actual = L.index_by(input, :name)
+
+      assert expected == actual
+    end
+  end
 end
