@@ -1,4 +1,6 @@
 defmodule KitchenSink.Merge.Path do
+  @moduledoc false
+
   @doc """
   Merge keys from origin object into destination object. only values from the defined path get merged.
   The merge_key can be anything, it will be wrapped in a list to be used with the Access module
