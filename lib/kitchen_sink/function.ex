@@ -44,6 +44,9 @@ defmodule KitchenSink.Function do
   from clojure. takes in a list of functions, outputs a function that takes in a list of values, then applies the
   functions to each value. sorta like a super Enum.map
   """
+  def juxt(input, functions) when is_list(functions) do
+    Enum.map(functions, fn fun -> fun.(input) end)
+  end
   def juxt(functions) when is_list(functions) do
     #good for optimiztion
     super_fun = fn x -> Enum.map(functions, fn fun -> fun.(x) end) end

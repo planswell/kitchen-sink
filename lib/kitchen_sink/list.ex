@@ -1,8 +1,11 @@
 defmodule KitchenSink.List do
-
   @moduledoc """
   this module is for List functions
   """
+
+  alias __MODULE__.IndexBy
+
+  defdelegate index_by(list, path), to: IndexBy
 
   @doc """
   takes a list of maps, transforms it into a map of maps with their value being the value_key. basically making a
