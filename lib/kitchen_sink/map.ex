@@ -374,6 +374,9 @@ defmodule KitchenSink.Map do
   end
 
 
+  defp do_key_paths({key, %{} = map_key}) when map_size(map_key) === 0 do
+    [[key]]
+  end
   defp do_key_paths({key, %{__struct__: _}}) do
     [[key]]
   end
