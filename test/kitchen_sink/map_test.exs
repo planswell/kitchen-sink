@@ -217,5 +217,12 @@ defmodule KitchenSink.MapTest do
       actual = KMap.key_paths(input)
       assert expected == actual
     end
+    test "values that are empty maps" do
+      assert %{key1: %{}} |> KMap.key_paths()
+      == [[:key1]]
+
+      assert %{key1: %{key1: %{}, key2: %{}}, key2: %{key1: %{}, key2: %{}}} |> KMap.key_paths()
+      == [[:key1, :key1], [:key1, :key2], [:key2, :key1], [:key2, :key2]]
+    end
   end
 end
