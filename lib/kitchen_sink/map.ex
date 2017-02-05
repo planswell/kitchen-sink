@@ -41,34 +41,35 @@ defmodule KitchenSink.Map do
   when it merges 2 trees.
 
   """
-  def deep_merge(left, right) do
-    do_deep_merge(left, right)
+  def deep_merge(left, right, options \\ []) when is_map(left) and is_map(right) do
+    do_deep_merge(left, right, options)
   end
 
-  def deep_merge(list) when is_list(list) do
-    Enum.reduce list, reverse(&do_deep_merge/2)
+  #FIXME: this should be moved to a list namespace
+  def deep_merge_list(list, options \\ []) when is_list(list) do
+    Enum.reduce list, &do_deep_merge(&2, &1, options)
   end
 
   # This allows us to do merges with structs that
   # have partial structs so the new struct doesn't
   # overwrite all the values of the old struct
-  defp do_deep_merge(left, %{__struct__: _} = right) do
+  defp do_deep_merge(left, %{__struct__: _} = right, options) do
     right = clean_struct(right)
-    do_deep_merge(left, right)
+    do_deep_merge(left, right, options)
   end
   # When the left argument is a struct, ensure that its own keys are the only
   # ones considered for the merge.
   # This guarantees that we don't convert it into a map containing new keys.
-  defp do_deep_merge(%{__struct__: _} = left, right) do
+  defp do_deep_merge(%{__struct__: _} = left, right, options) do
     :maps.map(fn key, left_value ->
       case Map.get(right, key) do
         nil         -> left_value
-        right_value -> do_deep_resolve(key, left_value, right_value)
+        right_value -> do_deep_resolve(key, left_value, right_value, options)
       end
     end, left)
   end
-  defp do_deep_merge(left, right) do
-    Map.merge(left, right, &do_deep_resolve/3)
+  defp do_deep_merge(left, right, options) do
+    Map.merge(left, right, &do_deep_resolve(&1, &2, &3, options))
   end
 
   # Checks if one list has more items than the other and passes the rest through
@@ -84,16 +85,16 @@ defmodule KitchenSink.Map do
 
   # Key exists in both maps, and both values are maps as well.
   # These can be merged recursively.
-  defp do_deep_resolve(_key, left = %{}, right = %{}) do
-    do_deep_merge(left, right)
+  defp do_deep_resolve(_key, left = %{}, right = %{}, options) do
+    do_deep_merge(left, right, options)
   end
 
   # We merge two lists so that each item gets checked and merged.
   # If there is more items in either then it gets passed through.
-  defp do_deep_resolve(_key, left_list, right_list) when is_list(left_list) and is_list(right_list) do
-    left_right_list = Enum.zip(left_list, right_list)
-    Enum.map(left_right_list, fn {left, right} ->
-      do_deep_merge(left, right)
+  defp do_deep_resolve(_key, left_list, right_list, [merge_lists: true]) when is_list(left_list) and is_list(right_list) do
+    Enum.zip(left_list, right_list)
+    |> Enum.map(fn {left, right} ->
+      do_deep_merge(left, right, [merge_lists: true])
     end)
     |> list_match_length(left_list, right_list)
   end
@@ -101,7 +102,7 @@ defmodule KitchenSink.Map do
   # Key exists in both maps, but at least one of the values is
   # NOT a map. We fall back to standard merge behavior, preferring
   # the value on the right.
-  defp do_deep_resolve(_key, _left, right) do
+  defp do_deep_resolve(_key, _left, right, _options) do
     right
   end
 
@@ -218,7 +219,7 @@ defmodule KitchenSink.Map do
 
     key_map
     |> Enum.map(renamed_key.(map))
-    |> deep_merge
+    |> deep_merge_list
   end
 
   @doc """
@@ -328,7 +329,7 @@ defmodule KitchenSink.Map do
 
     cleaned_t_map
     |> Enum.map(renamed_key.(map))
-    |> deep_merge
+    |> deep_merge_list
   end
 
   @doc """
@@ -440,6 +441,6 @@ defmodule KitchenSink.Map do
 
     remap_list
     |> Enum.map(remap)
-    |> deep_merge
+    |> deep_merge_list
   end
 end
