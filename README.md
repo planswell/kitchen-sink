@@ -10,7 +10,7 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 
     ```elixir
     def deps do
-      [{:kitchen_sink, "~> 0.0.22"}]
+      [{:kitchen_sink, "~> 0.0.23"}]
     end
     ```
 
