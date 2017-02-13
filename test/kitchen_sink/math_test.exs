@@ -20,7 +20,7 @@ defmodule KitchenSink.MathTest do
     assert ceil(0, 217) == 0
   end
 
-  test "negative numbers ceil toward positivity" do
+  test "negative numbers ceil toward infinity" do
     assert ceil(-7.5, 5) == -5
     assert ceil(-11, 5) == -10
   end
