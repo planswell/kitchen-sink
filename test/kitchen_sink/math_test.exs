@@ -13,4 +13,15 @@ defmodule KitchenSink.MathTest do
     assert 2 == div(4, 2, 0)
     assert 2.0 == div(4.0, 2, 0)
   end
+
+  test "ceil function stays put on zero" do
+    assert ceil(0, 1) == 0
+    assert ceil(0, 3) == 0
+    assert ceil(0, 217) == 0
+  end
+
+  test "negative numbers ceil toward positivity" do
+    assert ceil(-7.5, 5) == -5
+    assert ceil(-11, 5) == -10
+  end
 end
