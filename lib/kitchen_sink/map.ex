@@ -293,6 +293,7 @@ defmodule KitchenSink.Map do
   output.
   """
   @lint {Credo.Check.Refactor.ABCSize, false}
+  _ = @lint # https://github.com/rrrene/credo/issues/291
   @spec transform(Map.t, Map.t, Keyword.t) :: Map.t
   def transform(map, transformation_map, [prune: true] = _opts) do
     transform_key_value = fn (map, key, transform_fun) ->
@@ -374,7 +375,6 @@ defmodule KitchenSink.Map do
     end
   end
 
-
   defp do_key_paths({key, %{} = map_key}) when map_size(map_key) === 0 do
     [[key]]
   end
@@ -404,7 +404,6 @@ defmodule KitchenSink.Map do
   def key_paths(map) when is_map(map) do
     Enum.flat_map(map, &do_key_paths/1)
   end
-
 
   @doc """
   Takes a list of tuples of path(s) that describe from->to remappings of an object

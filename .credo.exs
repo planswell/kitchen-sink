@@ -16,6 +16,9 @@
         # For others you can also set parameters
         {Credo.Check.Readability.MaxLineLength, priority: :low, max_length: 120},
 
+        # Disable requiring @spec
+        {Credo.Check.Readability.Specs, false},
+
         # You can also customize the exit_status of each check.
         # If you don't want TODO comments to cause `mix credo` to fail, just
         # set this value to 0 (zero).
@@ -29,6 +32,9 @@
 
         # this lint check conflicts with our programming practises
         {Credo.Check.Refactor.PipeChainStart, false},
+
+        # Relax ABC Size
+        {Credo.Check.Refactor.ABCSize, max_size: 40},
       ]
     }
   ]

@@ -16,9 +16,9 @@ defmodule KitchenSink.Mixfile do
       lockfile: "mix.lock",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
-      deps: deps,
+      deps: deps(),
       # Hex
-      package: hex_package,
+      package: hex_package(),
       description: "Mixins for Elixir namespaces and Misc utility functions",
       # Docs
       name: "KitchenSink",
@@ -47,9 +47,9 @@ defmodule KitchenSink.Mixfile do
 
   defp deps do
     [
-      {:credo, "~> 0.4", only: [:dev, :test]},
-      {:dialyxir, "~> 0.3.5", only: [:dev]},
-      {:ex_doc, "~> 0.12", only: :dev}
+      {:credo, "~> 0.6.1", only: [:dev, :test]},
+      {:dialyxir, "~> 0.4.4", only: [:dev]},
+      {:ex_doc, "~> 0.14.5", only: :dev}
     ]
   end
 end

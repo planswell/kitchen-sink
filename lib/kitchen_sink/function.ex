@@ -11,12 +11,10 @@ defmodule KitchenSink.Function do
     fn(arg1, arg2) -> fun.(arg2, arg1) end
   end
 
-
   @doc """
   returns the objects you give it. useful in Enum.flat_map, or Enum.filter
   """
   def identity(x), do: x
-
 
   @doc """
   executes a value over a list of functions (this is functional composition without macros)
@@ -29,7 +27,6 @@ defmodule KitchenSink.Function do
     end
   end
 
-
   @doc """
   executes a value over a list of functions in reverse order (this is functional composition without macros)
   """
@@ -38,7 +35,6 @@ defmodule KitchenSink.Function do
     |> Enum.reverse
     |> pipe
   end
-
 
   @doc """
   from clojure. takes in a list of functions, outputs a function that takes in a list of values, then applies the
