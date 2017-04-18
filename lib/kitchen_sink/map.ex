@@ -140,35 +140,40 @@ defmodule KitchenSink.Map do
     [{current_key, new_key}] = options
     rename_key(map, current_key, new_key)
   end
-
   def rename_key(%{} = map, %{} = key_map) when map_size(key_map) === 1 do
     [{current_key, new_key}] = Map.to_list key_map
     rename_key(map, current_key, new_key)
   end
-
   def rename_key(%{} = map, {current_key, new_key}) do
     rename_key(map, current_key, new_key)
   end
-
   def rename_key(_,_) do
     %{}
   end
 
-  def rename_key(%{} = map, key, key) do
+  def rename_key(map, current_key, new_key, options \\ [overwrite: false])
+  def rename_key(nil, _, _, _) do
+    %{}
+  end
+  def rename_key(%{} = map, key, key, _options) do
     map
   end
-
-  def rename_key(%{} = map, current_key, new_key) do
+  def rename_key(%{} = map, current_key, new_key, overwrite: true) do
     {popped, popped_map} = Map.pop(map, current_key)
 
     case popped do
       nil -> map
-      _ -> Map.put_new(popped_map, new_key, popped)
+      _ -> Map.put(popped_map, new_key, popped)
     end
   end
+  def rename_key(%{} = map, current_key, new_key, overwrite: false) do
+    {popped, popped_map} = Map.pop(map, current_key)
 
-  def rename_key(_,_,_) do
-    %{}
+    case {popped, Map.has_key?(map, new_key)} do
+      {nil, _} -> map
+      {_, true} -> map
+      {_, false} -> Map.put_new(popped_map, new_key, popped)
+    end
   end
 
   @doc """

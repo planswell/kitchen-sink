@@ -105,6 +105,15 @@ defmodule KitchenSink.MapTest do
     assert KMap.rename_key(%{a: 1}, [a: :b]) == %{b: 1}
   end
 
+  test "renaming a key that exists will overwrite it" do
+    assert KMap.rename_key(%{a: 1, b: 2}, :a, :b, overwrite: true) == %{b: 1}
+  end
+
+  test "renaming a key that exists does nothing when overwrite: false" do
+    assert KMap.rename_key(%{a: 1, b: 2}, :a, :b, overwrite: false) == %{a: 1, b: 2}
+    assert KMap.rename_key(%{a: 1, b: 2}, :a, :b) == %{a: 1, b: 2}
+  end
+
   test "new nested key" do
     expected = %{parent: %{child: %{conception: "kenbert this is for you"}}}
     actual = KMap.make_nested("kenbert this is for you", [:parent, :child, :conception])
