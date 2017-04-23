@@ -13,6 +13,8 @@ defmodule KitchenSink.Math do
   def div(_numerator, 0.0, div_by_zero), do: div_by_zero
   def div(numerator, denominator, _div_by_zero), do: numerator / denominator
 
+  defdelegate ceil(number, significance), to: __MODULE__, as: :round_up_to_multiple
+
   @doc """
   Always round up to the nearest multiple of significance.
 
