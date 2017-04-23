@@ -447,4 +447,27 @@ defmodule KitchenSink.Map do
     |> Enum.map(remap)
     |> deep_merge_list
   end
+
+  @doc """
+  Compares two maps and returns a list of paths (used in Access) and the differences in values between the maps
+
+  iex> KitchenSink.Map.diff(%{a: 1, b: 2}, %{a: 3, b: 2})
+  [{[:a], 1, 3}]
+
+  iex> KitchenSink.Map.diff(%{c: %{d: 1}}, %{c: %{d: 4}})
+  [{[:c, :d], 1, 4}]
+  """
+  def diff(%{} = primary, %{} = secondary) do
+    primary_paths = primary |> key_paths()
+
+    compare_path = fn(path) ->
+      primary_val = get_in(primary, path)
+      secondary_val = get_in(secondary, path)
+      {path, primary_val, secondary_val}
+    end
+
+    primary_paths
+    |> Enum.map(compare_path)
+    |> Enum.reject(&match?({_, val, val}, &1))
+  end
 end
