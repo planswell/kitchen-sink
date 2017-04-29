@@ -456,9 +456,29 @@ defmodule KitchenSink.Map do
 
   iex> KitchenSink.Map.diff(%{c: %{d: 1}}, %{c: %{d: 4}})
   [{[:c, :d], 1, 4}]
+
+  iex> KitchenSink.Map.diff(%{c: %{d: 1, e: 7}}, %{c: %{d: 4}})
+  [
+    {[:c, :d], 1, 4},
+    {[:c, :e], 7, nil}
+  ]
+
+  iex> KitchenSink.Map.diff(%{c: %{d: 1}}, %{c: %{d: 4, e: 7}})
+  [
+    {[:c, :d], 1, 4},
+    {[:c, :e], nil, 7}
+  ]
   """
   def diff(%{} = primary, %{} = secondary) do
-    primary_paths = primary |> key_paths()
+    primary_paths =
+      primary
+      |> key_paths()
+      |> MapSet.new()
+
+    paths =
+      secondary
+      |> key_paths()
+      |> Enum.into(primary_paths)
 
     compare_path = fn(path) ->
       primary_val = get_in(primary, path)
@@ -466,7 +486,7 @@ defmodule KitchenSink.Map do
       {path, primary_val, secondary_val}
     end
 
-    primary_paths
+    paths
     |> Enum.map(compare_path)
     |> Enum.reject(&match?({_, val, val}, &1))
   end
