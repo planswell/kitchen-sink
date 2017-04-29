@@ -490,4 +490,32 @@ defmodule KitchenSink.Map do
     |> Enum.map(compare_path)
     |> Enum.reject(&match?({_, val, val}, &1))
   end
+
+  def do_trim(map, empty_val_fn?) do
+    map
+    |> Enum.map(fn
+      {key, %{} = children} -> {key, do_trim(children, empty_val_fn?)}
+      {key, val} -> {key, val}
+    end)
+    |> Enum.reject(empty_val_fn?) # we need to do the filter step after map
+    |> Map.new()
+  end
+
+  @doc """
+  Walks an object and recursively removes nodes with nil/empty values
+
+  Works for Structs as well!
+  """
+  def trim(%{} = map) do
+    empty_val? = fn
+      {_key, %{} = map} when map_size(map) == 0 -> true
+      {_key, nil} -> true
+      {_key, _} -> false
+    end
+
+    do_trim(map, empty_val?)
+  end
+  def trim(%{} = map, empty_val_fn?) do
+    do_trim(map, empty_val_fn?)
+  end
 end
