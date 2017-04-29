@@ -252,4 +252,107 @@ defmodule KitchenSink.MapTest do
       == [[:key1, :key1], [:key1, :key2], [:key2, :key1], [:key2, :key2]]
     end
   end
+
+  test "trim" do
+    input = %{}
+    expected = %{}
+    assert KMap.trim(input) == expected
+
+    input = %{
+      a: nil
+    }
+    expected = %{}
+    assert KMap.trim(input) == expected
+
+    input = %{
+      a: %{
+        b: nil
+      }
+    }
+    expected = %{}
+    assert KMap.trim(input) == expected
+
+    input = %{
+      a: %{
+        b: nil,
+        c: 5
+      }
+    }
+    expected = %{a: %{c: 5}}
+    assert KMap.trim(input) == expected
+
+    input = %{
+      a: %{
+        b: 5
+      }
+    }
+    expected = %{a: %{b: 5}}
+    assert KMap.trim(input) == expected
+
+    input = %{
+      a: %{
+        b: nil
+      },
+      c: %{
+        d: 5
+      }
+    }
+    expected = %{c: %{d: 5}}
+    assert KMap.trim(input) == expected
+  end
+
+  test "trim works with Enumerable Structs" do
+    input = %TestStructNested{
+      field1: %TestStruct{},
+      field2: %TestStruct{},
+    }
+    expected = %{}
+    assert KMap.trim(input) == expected
+
+    input = %TestStructNested{
+      field1: %TestStruct{
+        age: 0
+      },
+      field2: %TestStruct{},
+    }
+    expected = %{field1: %{age: 0}}
+    assert KMap.trim(input) == expected
+  end
+
+  defmodule TestStruct do
+    defstruct [:a, :b, :c]
+  end
+
+  test "trim works with non-Enumerable Structs" do
+    input = %{
+      field1: %{},
+      field2: %{},
+      non_enumerable_field: %TestStruct{}
+    }
+    expected = %{
+      non_enumerable_field: %TestStruct{}
+    }
+    assert KMap.trim(input) == expected
+  end
+
+  test "trim with specialized function for determining values to reject" do
+    # we declare that -1 is the same as nil or the empty map in this case
+    empty_val? = fn
+      {_key, %{} = map} when map_size(map) == 0 -> true
+      {_key, -1} -> true
+      {_key, nil} -> true
+      {_key, _} -> false
+    end
+
+    input = %{
+      a: %{
+        b: -1
+      },
+      c: %{
+        d: 5
+      }
+    }
+    expected = %{c: %{d: 5}}
+    assert KMap.trim(input, empty_val?) == expected
+  end
 end
