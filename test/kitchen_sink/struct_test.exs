@@ -11,11 +11,11 @@ defmodule KitchenSink.StructTest do
     end
 
     test "nested struct converts to map" do
-      assert Struct.to_map(
-        %TestStructNested{
-          field1: %TestStruct{},
-          field2: %TestStruct{},
-        }) == %{
+      input = %TestStructNested{
+        field1: %TestStruct{},
+        field2: %TestStruct{},
+      }
+      expected = %{
         field1: %{
           age: nil,
           name: nil,
@@ -25,6 +25,7 @@ defmodule KitchenSink.StructTest do
           name: nil,
         }
       }
+      assert Struct.to_map(input) == expected
     end
   end
 end
