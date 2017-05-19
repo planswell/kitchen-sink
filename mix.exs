@@ -1,8 +1,6 @@
 defmodule KitchenSink.Mixfile do
   use Mix.Project
 
-  @moduledoc false
-
   @version "1.0.2"
   @repo_url "https://github.com/planswell/kitchen-sink"
 

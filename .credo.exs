@@ -35,6 +35,8 @@
 
         # Relax ABC Size
         {Credo.Check.Refactor.ABCSize, max_size: 40},
+
+        {Credo.Check.Readability.ModuleDoc, false},
       ]
     }
   ]
