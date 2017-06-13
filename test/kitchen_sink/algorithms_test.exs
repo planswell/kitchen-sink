@@ -6,29 +6,27 @@ defmodule KitchenSink.AlgorithmsTest do
   alias KitchenSink.Algorithms
   doctest Algorithms
 
-  def look_for(desired_result) do
-    fn(value_to_test) ->
-      cond do
-        value_to_test < desired_result -> :high
-        value_to_test == desired_result -> :ok
-        value_to_test > desired_result -> :low
-      end
+  def find_target(pos, desired_result) do
+    cond do
+      pos < desired_result -> :high
+      pos == desired_result -> :ok
+      pos > desired_result -> :low
     end
   end
 
   test "Range with reversed endpoints" do
-    assert {:ok, 3} == Algorithms.binary_search(5 .. 1, look_for(3))
+    assert {:ok, 3} == Algorithms.binary_search(5, 1, &find_target/2, 3)
   end
 
   test "Single element range with desired value" do
-    assert {:ok, 2} == Algorithms.binary_search(2 .. 2, look_for(2))
+    assert {:ok, 2} == Algorithms.binary_search(2, 2, &find_target/2, 2)
   end
 
   test "Single element range without desired value" do
-    assert :not_found == Algorithms.binary_search(2 .. 2, look_for(3))
+    assert :not_found == Algorithms.binary_search(2, 2, &find_target/2, 3)
   end
 
   test "Interval with reversed endpoints" do
-    assert {:ok, 3.5} == Algorithms.binary_search(5, 1, look_for(3.5))
+    assert {:ok, 3.5} == Algorithms.binary_interval_search(5, 1, &find_target/2, 3.5)
   end
 end
