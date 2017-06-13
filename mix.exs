@@ -3,7 +3,7 @@ defmodule KitchenSink.Mixfile do
 
   @moduledoc false
 
-  @version "1.0.2"
+  @version "1.1.0"
   @repo_url "https://github.com/planswell/kitchen-sink"
 
   def project do
@@ -22,13 +22,18 @@ defmodule KitchenSink.Mixfile do
       description: "Mixins for Elixir namespaces and Misc utility functions",
       # Docs
       name: "KitchenSink",
-      docs: [source_ref: "v#{@version}", main: "KitchenSink", source_url: @repo_url,  extras: ["README.md"]],
+      docs: [
+        source_ref: "v#{@version}",
+        main: "KitchenSink",
+        source_url: @repo_url,
+        extras: ["README.md", "CHANGELOG.md"],
+      ],
       elixirc_paths: elixirc_paths(Mix.env),
       dialyzer: [plt_add_deps: :transitive],
     ]
   end
 
-  defp elixirc_paths(:test), do: ["lib","test/support"]
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_),     do: ["lib"]
 
   def application do
@@ -47,9 +52,9 @@ defmodule KitchenSink.Mixfile do
 
   defp deps do
     [
-      {:credo, "~> 0.6.1", only: [:dev, :test]},
-      {:dialyxir, "~> 0.4.4", only: [:dev]},
-      {:ex_doc, "~> 0.14.5", only: :dev}
+      {:credo, "~> 0.8.1", only: [:dev, :test]},
+      {:dialyxir, "~> 0.5.0", only: [:dev], runtime: false},
+      {:ex_doc, "~> 0.16.1", only: :dev}
     ]
   end
 end

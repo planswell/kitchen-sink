@@ -18,8 +18,6 @@ defmodule KitchenSink.Assert do
 
   Any nodes that fail this test will be displayed in nice colors in the assert error message.
   """
-  @lint {Credo.Check.Refactor.ABCSize, false}
-  _ = @lint # https://github.com/rrrene/credo/issues/291
   def assertish(expected, actual, epsilon, msg \\ "") when is_map(actual) and is_map(expected) do
     a_paths = KMap.key_paths(actual) |> Enum.sort
     e_paths = KMap.key_paths(expected) |> Enum.sort

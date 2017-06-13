@@ -147,7 +147,7 @@ defmodule KitchenSink.Map do
   def rename_key(%{} = map, {current_key, new_key}) do
     rename_key(map, current_key, new_key)
   end
-  def rename_key(_,_) do
+  def rename_key(_, _) do
     %{}
   end
 
@@ -297,8 +297,6 @@ defmodule KitchenSink.Map do
   key-value in the Map has been transformed. supplying `prune: true` prunes the map so only transformed values are
   output.
   """
-  @lint {Credo.Check.Refactor.ABCSize, false}
-  _ = @lint # https://github.com/rrrene/credo/issues/291
   @spec transform(Map.t, Map.t, Keyword.t) :: Map.t
   def transform(map, transformation_map, [prune: true] = _opts) do
     transform_key_value = fn (map, key, transform_fun) ->
@@ -493,14 +491,11 @@ defmodule KitchenSink.Map do
 
   def is_enumerable(%{__struct__: module}), do: is_enumerable(module)
   def is_enumerable(type) when is_map(type), do: true
-  @lint {Credo.Check.Readability.PreferImplicitTry, false}
   def is_enumerable(type) do
-    try do
-      Protocol.assert_impl!(Enumerable, type)
-      true
-    rescue
-      ArgumentError -> false
-    end
+    Protocol.assert_impl!(Enumerable, type)
+    true
+  rescue
+    ArgumentError -> false
   end
 
   def do_trim(map, empty_val_fn?) do
@@ -535,7 +530,4 @@ defmodule KitchenSink.Map do
   def trim(%{} = map, empty_val_fn?) do
     do_trim(map, empty_val_fn?)
   end
-
-  # @lint workaround for Elixir 1.4.x
-  _ = @lint
 end
