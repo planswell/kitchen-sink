@@ -27,5 +27,20 @@ defmodule KitchenSink.StructTest do
       }
       assert Struct.to_map(input) == expected
     end
+
+    test "struct with list of primitives converts to map" do
+      input = %TestStructNested{
+        field1: %TestStruct{},
+        field2: ["something", "else"]
+      }
+      expected = %{
+        field1: %{
+          age: nil,
+          name: nil
+        },
+        field2: ["something", "else"]
+      }
+      assert Struct.to_map(input) == expected
+    end
   end
 end
