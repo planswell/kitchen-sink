@@ -20,6 +20,9 @@ defmodule KitchenSink.Struct do
     end
     |> Enum.reduce(%{}, &do_deep_struct_to_map/2)
   end
+  defp do_deep_struct_to_map(value) do
+    value
+  end
 
   @doc "convert a struct to a map removing all structness"
   def to_map(struct1) do
