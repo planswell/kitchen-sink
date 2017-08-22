@@ -1,4 +1,9 @@
-# KitchenSink 1.1.0 Release Notes (2017-06-13)
+# KitchenSink 1.2.0 Release Notes (2017-08-22)
+
+## Changes since 1.1.0
+  * Added `Math.floor/2` delegated to `Math.round_down_to_multiple/2`
+  * Add @olafura to maintainers list
+  * Fix `Struct.to_map/1` for list of primitives
 
 ## Changes since 1.0.2
 

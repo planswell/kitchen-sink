@@ -3,7 +3,7 @@ defmodule KitchenSink.Mixfile do
 
   @moduledoc false
 
-  @version "1.1.0"
+  @version "1.2.0"
   @repo_url "https://github.com/planswell/kitchen-sink"
 
   def project do
@@ -44,7 +44,7 @@ defmodule KitchenSink.Mixfile do
 
   defp hex_package do
     [
-      maintainers: ["Paul Iannazzo"],
+      maintainers: ["Olafur Arason", "Paul Iannazzo"],
       licenses: ["MIT"],
       links: %{"GitHub" => @repo_url}
     ]
