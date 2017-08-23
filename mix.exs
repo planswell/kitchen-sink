@@ -10,7 +10,7 @@ defmodule KitchenSink.Mixfile do
     [
       app: :kitchen_sink,
       version: @version,
-      elixir: "~> 1.3",
+      elixir: "~> 1.4",
       build_path: "_build",
       deps_path: "deps",
       lockfile: "mix.lock",
