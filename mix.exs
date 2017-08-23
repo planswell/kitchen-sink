@@ -29,7 +29,7 @@ defmodule KitchenSink.Mixfile do
         extras: ["README.md", "CHANGELOG.md"],
       ],
       elixirc_paths: elixirc_paths(Mix.env),
-      dialyzer: [plt_add_deps: :transitive],
+      dialyzer: [ignore_warnings: "dialyzer.ignore-warnings", plt_add_deps: :transitive],
     ]
   end
 
