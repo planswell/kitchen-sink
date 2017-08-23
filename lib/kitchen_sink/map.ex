@@ -297,7 +297,7 @@ defmodule KitchenSink.Map do
   key-value in the Map has been transformed. supplying `prune: true` prunes the map so only transformed values are
   output.
   """
-  @spec transform(Map.t, Map.t, Keyword.t) :: Map.t
+  @spec transform(map, map, Keyword.t) :: map
   def transform(map, transformation_map, [prune: true] = _opts) do
     transform_key_value = fn (map, key, transform_fun) ->
       Map.get(map, key) |> transform_fun.()
@@ -350,7 +350,7 @@ defmodule KitchenSink.Map do
   key-value in the Map has been transformed. supplying `prune: true` prunes the map so only transformed values are
   output.
   """
-  @spec transform(Map.t, Map.t) :: Map.t
+  @spec transform(map, map) :: map
   def transform(map, transformation_map) do
     keys_to_transform = Map.keys(transformation_map)
     map_without_transformed_keys = map |> Map.drop(keys_to_transform)
