@@ -4,7 +4,7 @@ defmodule KitchenSink.BooleanTest do
   use ExUnit.Case
   alias KitchenSink.Boolean
 
-  doctest KitchenSink.Boolean
+  doctest KitchenSink.Boolean, import: true
 
   test "boolean parse" do
     assert Boolean.parse("TRUE") === true
