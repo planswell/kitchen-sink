@@ -4,10 +4,11 @@ defmodule KitchenSink.MiscTest do
   use ExUnit.Case
   import KitchenSink.Misc
 
+  doctest KitchenSink.Misc, import: true
+
   test "curried nth function is put into the module and works as expected" do
 
-
-    tuple = {1, 2 ,3 ,4 ,5}
+    tuple = {1, 2, 3, 4, 5}
     list = [1, 2, 3, 4, 5]
     map = %{a: 1, b: 2, c: 3, d: 4, e: 5}
 
@@ -23,7 +24,7 @@ defmodule KitchenSink.MiscTest do
 
   end
   test "named nth functions is put into the module and works as expected" do
-    tuple = {1, 2 ,3 ,4 ,5}
+    tuple = {1, 2, 3, 4, 5}
     list = [1, 2, 3, 4, 5]
     map = %{a: 1, b: 2, c: 3, d: 4, e: 5}
 
