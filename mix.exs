@@ -3,14 +3,14 @@ defmodule KitchenSink.Mixfile do
 
   @moduledoc false
 
-  @version "1.2.0"
+  @version "1.3.0"
   @repo_url "https://github.com/planswell/kitchen-sink"
 
   def project do
     [
       app: :kitchen_sink,
       version: @version,
-      elixir: "~> 1.3",
+      elixir: "~> 1.4",
       build_path: "_build",
       deps_path: "deps",
       lockfile: "mix.lock",
@@ -29,7 +29,7 @@ defmodule KitchenSink.Mixfile do
         extras: ["README.md", "CHANGELOG.md"],
       ],
       elixirc_paths: elixirc_paths(Mix.env),
-      dialyzer: [plt_add_deps: :transitive],
+      dialyzer: [ignore_warnings: "dialyzer.ignore-warnings", plt_add_deps: :transitive],
     ]
   end
 
