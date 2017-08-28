@@ -18,15 +18,21 @@ defmodule KitchenSink.Boolean do
 
   @doc """
   Parse boolean either from string or integer, if it's not a boolean then it returns :error
+
+      iex> parse("True")
+      true
+      iex> parse("Lie")
+      :error
   """
-  def parse(st) when is_binary(st) do
-    st
+  @spec parse(String.t | integer) :: boolean | :error
+  def parse(value) when is_binary(value) do
+    value
     |> String.trim
     |> String.downcase
     |> string_bool?
   end
-  def parse(i) when is_integer(i) do
-    case i do
+  def parse(value) when is_integer(value) do
+    case value do
       1 -> true
       0 -> false
       _ -> :error
