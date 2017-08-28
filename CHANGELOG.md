@@ -1,5 +1,9 @@
 # KitchenSink 1.3.0 Release Notes (2017-08-25)
 
+## Changes since 1.3.0
+  * Added KitchenSink.Integer
+    * ensure_integer/1
+
 ## Changes since 1.2.0
   * Bump Elixir version to 1.4.5
   * Update dialyxir - dev only
