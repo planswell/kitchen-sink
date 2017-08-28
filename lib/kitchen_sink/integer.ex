@@ -12,5 +12,5 @@ defmodule KitchenSink.Integer do
   2
   """
   def ensure_integer(i) when is_integer(i), do: i
-  def ensure_integer(s) when is_binary(s), do: String.to_integer(s)
+  def ensure_integer(s) when is_binary(s), do: s |> String.strip() |> String.to_integer()
 end
