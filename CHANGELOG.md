@@ -1,4 +1,4 @@
-# KitchenSink 1.3.0 Release Notes (2017-08-25)
+# KitchenSink
 
 ## Changes since 1.3.0
   * Added KitchenSink.Integer
