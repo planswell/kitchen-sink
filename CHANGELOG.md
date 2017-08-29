@@ -1,4 +1,9 @@
-# KitchenSink 1.3.0 Release Notes (2017-08-25)
+# KitchenSink
+
+## Changes since 1.3.0
+  * Added KitchenSink.Integer
+    * ensure_integer/1
+  * Add drop option to Struct.to_map
 
 ## Changes since 1.2.0
   * Bump Elixir version to 1.4.5
