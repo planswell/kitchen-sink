@@ -37,7 +37,7 @@ defmodule KitchenSink.Algorithms do
       iex> Algorithms.binary_search(0, 3, search_names, "Tony")
       {:ok, 3}
       iex> Algorithms.binary_search(0, 3, search_names, "Phil")
-      :not_found
+      {:not_found, 2}
 
   It is *possible* to override the calculation of the midpoint for the binary
   search, and that is "...left as an exercise for the reader."
@@ -115,7 +115,7 @@ defmodule KitchenSink.Algorithms do
   defp ok_or_not_found(n, fit, target) do
     case fit.(n, target) do
       :ok -> {:ok, n}
-      _ -> :not_found
+      _ -> {:not_found, n}
     end
   end
 end

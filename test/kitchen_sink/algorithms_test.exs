@@ -23,7 +23,7 @@ defmodule KitchenSink.AlgorithmsTest do
   end
 
   test "Single element range without desired value" do
-    assert :not_found == Algorithms.binary_search(2, 2, &find_target/2, 3)
+    assert {:not_found, 2} == Algorithms.binary_search(2, 2, &find_target/2, 3)
   end
 
   test "Interval with reversed endpoints" do
