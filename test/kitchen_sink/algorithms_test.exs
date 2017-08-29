@@ -26,8 +26,42 @@ defmodule KitchenSink.AlgorithmsTest do
     assert {:not_found, 2} == Algorithms.binary_search(2, 2, &find_target/2, 3)
   end
 
+  test "Range respects lower bound" do
+    assert {:not_found, 31} == Algorithms.binary_search(31, 80, fn _, _ -> :low end, 3)
+  end
+
+  test "Random 0-straddled range with random target" do
+    {lower, upper} = random_integer_range(:straddled, 1000)
+    to_find = lower + :rand.uniform(1000)
+    assert {:ok, to_find} == Algorithms.binary_search(lower, upper, &find_target/2, to_find)
+  end
+
+  test "Range respects positive randomised lower bound" do
+    {lower, upper} = random_integer_range(:positive, 100)
+    assert {:not_found, lower} == Algorithms.binary_search(lower, upper, fn _, _ -> :low end, 3)
+  end
+
+  test "Range respects negative randomised lower bound" do
+    {lower, upper} = random_integer_range(:negative, 100)
+    assert {:not_found, lower} == Algorithms.binary_search(lower, upper, fn _, _ -> :low end, 3)
+  end
+
+  test "Range respects upper bound" do
+    assert {:not_found, 80} == Algorithms.binary_search(34, 80, fn _, _ -> :high end, 3)
+  end
+
+  test "Range respects positive randomised upper bound" do
+    {lower, upper} = random_integer_range(:positive, 100)
+    assert {:not_found, upper} == Algorithms.binary_search(lower, upper, fn _, _ -> :high end, 3)
+  end
+
+  test "Range respects extreme randomised upper bound" do
+    {lower, upper} = random_integer_range(:negative, 100)
+    assert {:not_found, upper} == Algorithms.binary_search(lower, upper, fn _, _ -> :high end, 3)
+  end
+
   test "Interval with reversed endpoints" do
-    assert {:ok, 3.5} == Algorithms.binary_interval_search(5, 1, &find_target/2, 3.5)
+    assert {:ok, 3.5} == Algorithms.binary_search(5, 1, &find_target/2, 3.5, :interval)
   end
 
   # FIXME: Maybe make a Random module for these to live in?

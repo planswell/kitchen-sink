@@ -12,7 +12,7 @@ defmodule KitchenSink.Algorithms do
 
   @type binary_search_position :: integer
   @type binary_search_fit_func :: (binary_search_position, any -> :ok | :high | :low)
-  @type binary_search_mid_func :: (binary_search_position, binary_search_position -> binary_search_position)
+  @type binary_search_strategy :: (:midpoint | :interval)
   @type binary_search_result :: {:ok, binary_search_position} | :not_found
 
   @type binary_interval_search_position :: number
@@ -22,7 +22,10 @@ defmodule KitchenSink.Algorithms do
   @doc """
   `binary_search` performs a binary search over a range.
 
-  ## Examples
+  The binary search function requires a midpoint strategy to be specified. If no strategy
+  is specified, it defaults to `:midpoint`
+
+  ## Examples using the `:midpoint` strategy
 
       iex> names = ~w(Adrian Bill Robert Tony) # Sorted!
       iex> search_names = fn(position, target) ->
@@ -34,42 +37,15 @@ defmodule KitchenSink.Algorithms do
       ...>   end
       ...> end
       iex>
-      iex> Algorithms.binary_search(0, 3, search_names, "Tony")
+      iex> Algorithms.binary_search(0, 3, search_names, "Tony", :midpoint)
       {:ok, 3}
-      iex> Algorithms.binary_search(0, 3, search_names, "Phil")
+      iex> Algorithms.binary_search(0, 3, search_names, "Phil", :midpoint)
       {:not_found, 2}
 
   It is *possible* to override the calculation of the midpoint for the binary
   search, and that is "...left as an exercise for the reader."
-  """
-  @spec binary_search(
-    binary_search_position, binary_search_position, binary_search_fit_func, any, binary_search_mid_func
-  ) :: binary_search_result
-  def binary_search(range_start, range_finish, fit, target, calculate_mid \\ &binary_search_midpoint/2) when is_integer(range_start) and is_integer(range_finish) and is_function(fit) and is_function(calculate_mid) do
-    do_binary_search(range_start, range_finish, fit, target, calculate_mid)
-  end
 
-  defp do_binary_search(start, finish, fit, target, calculate_mid) when finish < start do
-    binary_search(finish, start, fit, target, calculate_mid)
-  end
-  defp do_binary_search(position, position, fit, target, _), do: ok_or_not_found(position, fit, target)
-  defp do_binary_search(start, finish, fit, target, calculate_mid) do
-    mid = calculate_mid.(start, finish)
-    case fit.(mid, target) do
-      :ok -> {:ok, mid}
-      :high -> do_binary_search((mid + 1), finish, fit, target, calculate_mid)
-      :low -> do_binary_search(start, (mid - 1), fit, target, calculate_mid)
-    end
-  end
-
-  defp binary_search_midpoint(start, finish) do
-    start + div(finish - start, 2)
-  end
-
-  @doc """
-  `binary_interval_search` can search in an interval.
-
-  ## Examples
+  ## Examples using the `:interval` strategy
 
   To see where *y = 10 + x³* and *y = 1000 + x²* intersect
 
@@ -87,29 +63,56 @@ defmodule KitchenSink.Algorithms do
       ...>   end
       ...> end
       iex>
-      iex> {:ok, result} = Algorithms.binary_interval_search(1, 100, solve, 0.0)
+      iex> {:ok, result} = Algorithms.binary_search(1, 100, solve, 0.0, :interval)
       iex> Float.round(result, 6)
       10.311285
   """
-
-  @spec binary_interval_search(
-    binary_interval_search_position, binary_interval_search_position, binary_interval_search_fit_func, any
-  ) :: binary_interval_search_result
-  def binary_interval_search(interval_start, interval_finish, fit, target \\ nil) when is_number(interval_start) and is_number(interval_finish) and is_function(fit) do
-    do_binary_interval_search(interval_start / 1, interval_finish / 1, fit, target)
+  @spec binary_search(
+    binary_search_position, binary_search_position, binary_search_fit_func, any, binary_search_strategy
+  ) :: binary_search_result
+  def binary_search(range_start, range_finish, fit, target, strategy) when is_function(fit) do
+    do_binary_search(range_start, range_finish, fit, target, strategy)
   end
 
-  defp do_binary_interval_search(position, position, fit, target), do: ok_or_not_found(position, fit, target)
-  defp do_binary_interval_search(start, finish, fit, target) when start > finish do
-    binary_interval_search(finish, start, fit, target)
+  def binary_search(range_start, range_finish, fit, target) do
+    binary_search(range_start, range_finish, fit, target, :midpoint)
   end
-  defp do_binary_interval_search(start, finish, fit, target) do
-    mid = start + (finish - start) / 2.0
+
+  defp do_binary_search(start, finish, fit, target, strategy) when finish < start do
+    binary_search(finish, start, fit, target, strategy)
+  end
+  defp do_binary_search(position, position, fit, target, _), do: ok_or_not_found(position, fit, target)
+  defp do_binary_search(start, finish, fit, target, :midpoint) do
+    mid = binary_search_midpoint(start, finish)
     case fit.(mid, target) do
       :ok -> {:ok, mid}
-      :high -> do_binary_interval_search(mid, finish, fit, target)
-      :low -> do_binary_interval_search(start, mid, fit, target)
+      :high -> do_binary_search(bounded_increment(mid, finish), finish, fit, target, :midpoint)
+      :low -> do_binary_search(start, bounded_decrement(mid, start), fit, target, :midpoint)
+   end
+  end
+  defp do_binary_search(start, finish, fit, target, :interval) do
+    mid = binary_search_interval(start, finish)
+    case fit.(mid, target) do
+      :ok -> {:ok, mid}
+      :high -> do_binary_search(mid, finish, fit, target, :interval)
+      :low -> do_binary_search(start, mid, fit, target, :interval)
     end
+  end
+
+  defp binary_search_midpoint(start, finish) do
+    start + div(finish - start, 2)
+  end
+
+  defp binary_search_interval(start, finish) do
+    start + (finish - start) / 2.0
+  end
+
+  defp bounded_increment(to_increment, bound) do
+    min(to_increment + 1, bound)
+  end
+
+  defp bounded_decrement(to_decrement, bound) do
+    max(to_decrement - 1, bound)
   end
 
   defp ok_or_not_found(n, fit, target) do
