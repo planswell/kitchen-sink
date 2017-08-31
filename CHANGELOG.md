@@ -1,5 +1,8 @@
 # KitchenSink
 
+## Changes since 1.3.1
+  * Refactor and test the binary search algorithm
+
 ## Changes since 1.3.0
   * Added KitchenSink.Integer
     * ensure_integer/1
