@@ -45,6 +45,21 @@ defmodule KitchenSink.Algorithms do
   It is *possible* to override the calculation of the midpoint for the binary
   search, and that is "...left as an exercise for the reader."
 
+  It is also possible to binary-search multiple ranges at the same time, in case you are
+  trying to find some balance between of a number of variable factors.
+
+  ## Example (albeit a contrived one) of searching multiple ranges simultaneously
+    iex>   solve = fn (pos, desired_result) ->
+    ...>     result = Enum.reduce(pos, fn (x, acc) -> x + acc end)
+    ...>     cond do
+    ...>       result < desired_result -> :high
+    ...>       result == desired_result -> :ok
+    ...>       result > desired_result -> :low
+    ...>     end
+    ...>   end
+    iex> {:ok, result} = Algorithms.binary_search([2..40, 20..100], solve, 27, :midpoint)
+    {:ok, [24, 3]}
+
   ## Examples using the `:interval` strategy
 
   To see where *y = 10 + x³* and *y = 1000 + x²* intersect
@@ -67,58 +82,105 @@ defmodule KitchenSink.Algorithms do
       iex> Float.round(result, 6)
       10.311285
   """
+  def binary_search(range_list, fit, target, strategy) when is_function(fit) and is_list(range_list) do
+    {range_start_list, range_finish_list} = Enum.reduce(
+      range_list,
+      {[], []},
+      fn (range, {start_list, finish_list}) ->
+        start..finish = range
+        {[start] ++ start_list, [finish] ++ finish_list}
+      end
+    )
+
+    binary_search(range_start_list, range_finish_list, fit, target, strategy)
+  end
+  def binary_search(start, finish, fit, target, strategy \\ :midpoint)
+
   @spec binary_search(
     binary_search_position, binary_search_position, binary_search_fit_func, any, binary_search_strategy
   ) :: binary_search_result
+  def binary_search(
+    range_start_list,
+    range_finish_list,
+    fit,
+    target,
+    strategy
+  ) when is_function(fit) and is_list(range_start_list) and is_list(range_finish_list) do
+    {start_list, finish_list} = ensure_order(range_start_list, range_finish_list)
+    do_binary_search(start_list, finish_list, fit, target, strategy)
+  end
   def binary_search(range_start, range_finish, fit, target, strategy) when is_function(fit) do
-    do_binary_search(range_start, range_finish, fit, target, strategy)
+    binary_search([range_start], [range_finish], fit, target, strategy)
   end
 
-  def binary_search(range_start, range_finish, fit, target) do
-    binary_search(range_start, range_finish, fit, target, :midpoint)
+  defp ensure_order(same, same) do
+    {same, same}
+  end
+  defp ensure_order(start_list, finish_list) do
+    [a | start_rest] = start_list
+    [b | finish_rest] = finish_list
+    {start, finish} =
+      if a < b do
+        {[a], [b]}
+      else
+        {[b], [a]}
+      end
+    {final_start, final_finish} = ensure_order(start_rest, finish_rest)
+    {start ++ final_start, finish ++ final_finish}
   end
 
-  defp do_binary_search(start, finish, fit, target, strategy) when finish < start do
-    binary_search(finish, start, fit, target, strategy)
-  end
   defp do_binary_search(position, position, fit, target, _), do: ok_or_not_found(position, fit, target)
-  defp do_binary_search(start, finish, fit, target, :midpoint) do
-    mid = binary_search_midpoint(start, finish)
-    case fit.(mid, target) do
-      :ok -> {:ok, mid}
-      :high -> do_binary_search(bounded_increment(mid, finish), finish, fit, target, :midpoint)
-      :low -> do_binary_search(start, bounded_decrement(mid, start), fit, target, :midpoint)
+  defp do_binary_search(start_list, finish_list, fit, target, :midpoint) do
+    mid_list = binary_search_midpoint(start_list, finish_list)
+    # Maintain backward-compatibility
+    mid_fit_check = if Kernel.length(mid_list) === 1, do: List.first(mid_list), else: mid_list
+    case fit.(mid_fit_check, target) do
+      :ok -> {:ok, mid_fit_check}
+      :high -> do_binary_search(bounded_increment(mid_list, finish_list), finish_list, fit, target, :midpoint)
+      :low -> do_binary_search(start_list, bounded_decrement(mid_list, start_list), fit, target, :midpoint)
    end
   end
-  defp do_binary_search(start, finish, fit, target, :interval) do
-    mid = binary_search_interval(start, finish)
-    case fit.(mid, target) do
-      :ok -> {:ok, mid}
-      :high -> do_binary_search(mid, finish, fit, target, :interval)
-      :low -> do_binary_search(start, mid, fit, target, :interval)
+  defp do_binary_search(start_list, finish_list, fit, target, :interval) do
+    mid_list = binary_search_interval(start_list, finish_list)
+    # Maintain backward-compatibility
+    mid_fit_check = if Kernel.length(mid_list) === 1, do: List.first(mid_list), else: mid_list
+    case fit.(mid_fit_check, target) do
+      :ok -> {:ok, mid_fit_check}
+      :high -> do_binary_search(mid_list, finish_list, fit, target, :interval)
+      :low -> do_binary_search(start_list, mid_list, fit, target, :interval)
     end
   end
 
-  defp binary_search_midpoint(start, finish) do
-    start + div(finish - start, 2)
+  defp binary_search_midpoint(start_list, finish_list) do
+    start_list
+    |> Enum.zip(finish_list)
+    |> Enum.map(fn {start, finish} -> start + div(finish - start, 2) end)
   end
 
-  defp binary_search_interval(start, finish) do
-    start + (finish - start) / 2.0
+  defp binary_search_interval(start_list, finish_list) do
+    start_list
+    |> Enum.zip(finish_list)
+    |> Enum.map(fn {start, finish} -> start + (finish - start) / 2.0 end)
   end
 
-  defp bounded_increment(to_increment, bound) do
-    min(to_increment + 1, bound)
+  defp bounded_increment(to_increment_list, bound_list) do
+    to_increment_list
+    |> Enum.zip(bound_list)
+    |> Enum.map(fn {to_increment, bound} -> min(to_increment + 1, bound) end)
   end
 
-  defp bounded_decrement(to_decrement, bound) do
-    max(to_decrement - 1, bound)
+  defp bounded_decrement(to_decrement_list, bound_list) do
+    to_decrement_list
+    |> Enum.zip(bound_list)
+    |> Enum.map(fn {to_decrement, bound} -> max(to_decrement - 1, bound) end)
   end
 
-  defp ok_or_not_found(n, fit, target) do
-    case fit.(n, target) do
-      :ok -> {:ok, n}
-      _ -> {:not_found, n}
+  defp ok_or_not_found(list, fit, target) do
+    # Maintain backward-compatibility
+    fit_check = if Kernel.length(list) === 1, do: List.first(list), else: list
+    case fit.(fit_check, target) do
+      :ok -> {:ok, fit_check}
+      _ -> {:not_found, fit_check}
     end
   end
 end
