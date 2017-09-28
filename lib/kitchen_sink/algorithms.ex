@@ -57,8 +57,8 @@ defmodule KitchenSink.Algorithms do
     ...>       result > desired_result -> :low
     ...>     end
     ...>   end
-    iex> {:ok, result} = Algorithms.binary_search([2..40, 20..100], solve, 27, :midpoint)
-    {:ok, [24, 3]}
+    iex> Algorithms.hybrid_binary_search([2..40, 20..100], solve, 27, :midpoint)
+    {:ok, [3, 24]}
 
   ## Examples using the `:interval` strategy
 
@@ -82,20 +82,21 @@ defmodule KitchenSink.Algorithms do
       iex> Float.round(result, 6)
       10.311285
   """
-  def binary_search(range_list, fit, target, strategy) when is_function(fit) and is_list(range_list) do
-    {range_start_list, range_finish_list} = Enum.reduce(
-      range_list,
-      {[], []},
-      fn (range, {start_list, finish_list}) ->
-        start..finish = range
-        {[start] ++ start_list, [finish] ++ finish_list}
-      end
-    )
+  def hybrid_binary_search(range_list, fit, target, strategy \\ :midpoint) when is_function(fit) and is_list(range_list) do
+    {range_start_list, range_finish_list} =
+      range_list
+      |> Enum.reduce(
+        {[], []},
+        fn (range, {start_list, finish_list}) ->
+          start..finish = range
+          {start_list ++ [start], finish_list ++ [finish]}
+        end
+      )
 
     binary_search(range_start_list, range_finish_list, fit, target, strategy)
   end
-  def binary_search(start, finish, fit, target, strategy \\ :midpoint)
 
+  def binary_search(start, finish, fit, target, strategy \\ :midpoint)
   @spec binary_search(
     binary_search_position, binary_search_position, binary_search_fit_func, any, binary_search_strategy
   ) :: binary_search_result
