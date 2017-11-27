@@ -30,6 +30,8 @@ defmodule KitchenSink.StructEnum do
           {:ok, false}
         end
 
+        def slice(_map), do: {:error, __MODULE__}
+
         def reduce(map, acc, fun) do
           :maps.remove(:__struct__, map)
           |> :maps.to_list
