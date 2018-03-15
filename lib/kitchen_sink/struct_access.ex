@@ -19,6 +19,7 @@ defmodule KitchenSink.StructAccess do
       def get_and_update(map, key, fun) when is_map(map) do
         Map.get_and_update(map, key, fun)
       end
+      def pop(map, key), do: Map.pop(map, key)
     end
   end
 end
