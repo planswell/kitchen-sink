@@ -17,7 +17,11 @@ defmodule KitchenSink.Struct do
   end
   defp do_deep_struct_to_map(struct1, options) when is_map struct1 do
     if Map.has_key?(struct1, :__struct__) do
-      KitchenSink.Map.clean_struct(struct1)
+      if Keyword.get(options, :clean_struct, false) do
+        KitchenSink.Map.clean_struct(struct1)
+      else
+        Map.from_struct(struct1)
+      end
     else
       struct1
     end
