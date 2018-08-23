@@ -6,8 +6,8 @@ defmodule KitchenSink.StructTest do
   alias KitchenSink.Struct
 
   describe "to_map()" do
-    test "empty struct converts to map with nil fields" do
-      assert Struct.to_map(%TestStruct{}) == %{age: nil, name: nil}
+    test "empty struct converts to map with no fields" do
+      assert Struct.to_map(%TestStruct{}) == %{}
     end
 
     test "nested struct converts to map" do
@@ -17,12 +17,8 @@ defmodule KitchenSink.StructTest do
       }
       expected = %{
         field1: %{
-          age: nil,
-          name: nil,
         },
         field2: %{
-          age: nil,
-          name: nil,
         }
       }
       assert Struct.to_map(input) == expected
@@ -35,8 +31,6 @@ defmodule KitchenSink.StructTest do
       }
       expected = %{
         field1: %{
-          age: nil,
-          name: nil
         },
         field2: ["something", "else"]
       }
