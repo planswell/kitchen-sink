@@ -52,7 +52,7 @@ defmodule KitchenSink.Mixfile do
 
   defp deps do
     [
-      {:credo, "~> 0.8.1", only: [:dev, :test]},
+      {:credo, "~> 1.0", only: [:dev, :test]},
       {:dialyxir, "~> 0.5.0", only: [:dev], runtime: false},
       {:ex_doc, "~> 0.16.1", only: :dev}
     ]

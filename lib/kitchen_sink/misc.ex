@@ -1,8 +1,6 @@
 defmodule KitchenSink.Misc do
 
-  @moduledoc """
-
-  """
+  @moduledoc false
 
   @doc """
   Return a function which returns the *n*th element (zero based) of a collection

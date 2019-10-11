@@ -1,5 +1,5 @@
 defmodule KitchenSink.Merge do
-  @moduledoc ""
+  @moduledoc false
 
   alias __MODULE__.Path
 
