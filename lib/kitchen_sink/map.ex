@@ -328,7 +328,7 @@ defmodule KitchenSink.Map do
     t_map_keys = Map.keys(transformation_map)
     input_map_keys = Map.keys(map)
     # you can do t_map_keys -- input_map_keys here, but this is faster for large maps.
-    keys_to_drop = MapSet.difference(MapSet.new(t_map_keys), MapSet.new(input_map_keys))
+    keys_to_drop = MapSet.difference(MapSet.new(t_map_keys), MapSet.new(input_map_keys)) |> MapSet.to_list()
     cleaned_t_map = Map.drop(transformation_map, keys_to_drop)
 
     cleaned_t_map
