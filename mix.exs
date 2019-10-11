@@ -54,7 +54,7 @@ defmodule KitchenSink.Mixfile do
     [
       {:credo, "~> 1.0", only: [:dev, :test]},
       {:dialyxir, "~> 0.5.0", only: [:dev], runtime: false},
-      {:ex_doc, "~> 0.16.1", only: :dev}
+      {:ex_doc, "~> 0.16", only: :dev}
     ]
   end
 end
