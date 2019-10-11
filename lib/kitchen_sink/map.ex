@@ -85,7 +85,7 @@ defmodule KitchenSink.Map do
 
   # Key exists in both maps, and both values are maps as well.
   # These can be merged recursively.
-  defp do_deep_resolve(_key, left = %{}, right = %{}, options) do
+  defp do_deep_resolve(_key, %{} = left, %{} = right, options) do
     do_deep_merge(left, right, options)
   end
 
