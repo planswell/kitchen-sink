@@ -58,7 +58,7 @@ defmodule KitchenSink.List do
   """
   @spec index_on(list(map), list(any), any) :: map
   def index_on(list_of_maps, take_keys, value_key) do
-    take_keys = take_keys |> List.wrap |> MapSet.new |> MapSet.delete(value_key)
+    take_keys = take_keys |> List.wrap |> MapSet.new |> MapSet.delete(value_key) |> MapSet.to_list()
     lookup_transform = fn(map) ->
       {
         Map.take(map, take_keys),
