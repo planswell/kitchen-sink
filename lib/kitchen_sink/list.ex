@@ -63,6 +63,7 @@ defmodule KitchenSink.List do
       |> List.wrap()
       |> MapSet.new()
       |> MapSet.delete(value_key)
+      |> MapSet.to_list()
 
     lookup_transform = fn map ->
       {
