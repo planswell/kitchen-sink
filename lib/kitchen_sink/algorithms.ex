@@ -11,13 +11,16 @@ defmodule KitchenSink.Algorithms do
   """
 
   @type binary_search_position :: integer
-  @type binary_search_fit_func :: (binary_search_position, any -> :ok | :high | :low)
-  @type binary_search_strategy :: (:midpoint | :interval)
+  @type binary_search_fit_func ::
+          (binary_search_position, any -> :ok | :high | :low)
+  @type binary_search_strategy :: :midpoint | :interval
   @type binary_search_result :: {:ok, binary_search_position} | :not_found
 
   @type binary_interval_search_position :: number
-  @type binary_interval_search_fit_func :: (binary_interval_search_position, any -> :ok | :high | :low)
-  @type binary_interval_search_result :: {:ok, binary_interval_search_position} | :not_found
+  @type binary_interval_search_fit_func ::
+          (binary_interval_search_position, any -> :ok | :high | :low)
+  @type binary_interval_search_result ::
+          {:ok, binary_interval_search_position} | :not_found
 
   @doc """
   `binary_search` performs a binary search over a range.
@@ -82,12 +85,13 @@ defmodule KitchenSink.Algorithms do
       iex> Float.round(result, 6)
       10.311285
   """
-  def hybrid_binary_search(range_list, fit, target, strategy \\ :midpoint) when is_function(fit) and is_list(range_list) do
+  def hybrid_binary_search(range_list, fit, target, strategy \\ :midpoint)
+      when is_function(fit) and is_list(range_list) do
     {range_start_list, range_finish_list} =
       range_list
       |> Enum.reduce(
         {[], []},
-        fn (range, {start_list, finish_list}) ->
+        fn range, {start_list, finish_list} ->
           start..finish = range
           {start_list ++ [start], finish_list ++ [finish]}
         end
@@ -97,54 +101,92 @@ defmodule KitchenSink.Algorithms do
   end
 
   def binary_search(start, finish, fit, target, strategy \\ :midpoint)
+
   @spec binary_search(
-    binary_search_position, binary_search_position, binary_search_fit_func, any, binary_search_strategy
-  ) :: binary_search_result
+          binary_search_position,
+          binary_search_position,
+          binary_search_fit_func,
+          any,
+          binary_search_strategy
+        ) :: binary_search_result
   def binary_search(
-    range_start_list,
-    range_finish_list,
-    fit,
-    target,
-    strategy
-  ) when is_function(fit) and is_list(range_start_list) and is_list(range_finish_list) do
-    {start_list, finish_list} = ensure_order(range_start_list, range_finish_list)
+        range_start_list,
+        range_finish_list,
+        fit,
+        target,
+        strategy
+      )
+      when is_function(fit) and is_list(range_start_list) and
+             is_list(range_finish_list) do
+    {start_list, finish_list} =
+      ensure_order(range_start_list, range_finish_list)
+
     do_binary_search(start_list, finish_list, fit, target, strategy)
   end
-  def binary_search(range_start, range_finish, fit, target, strategy) when is_function(fit) do
+
+  def binary_search(range_start, range_finish, fit, target, strategy)
+      when is_function(fit) do
     binary_search([range_start], [range_finish], fit, target, strategy)
   end
 
   defp ensure_order(same, same) do
     {same, same}
   end
+
   defp ensure_order(start_list, finish_list) do
     [a | start_rest] = start_list
     [b | finish_rest] = finish_list
+
     {start, finish} =
       if a < b do
         {[a], [b]}
       else
         {[b], [a]}
       end
+
     {final_start, final_finish} = ensure_order(start_rest, finish_rest)
     {start ++ final_start, finish ++ final_finish}
   end
 
-  defp do_binary_search(position, position, fit, target, _), do: ok_or_not_found(position, fit, target)
+  defp do_binary_search(position, position, fit, target, _),
+    do: ok_or_not_found(position, fit, target)
+
   defp do_binary_search(start_list, finish_list, fit, target, :midpoint) do
     mid_list = binary_search_midpoint(start_list, finish_list)
     # Maintain backward-compatibility
-    mid_fit_check = if Kernel.length(mid_list) === 1, do: List.first(mid_list), else: mid_list
+    mid_fit_check =
+      if Kernel.length(mid_list) === 1, do: List.first(mid_list), else: mid_list
+
     case fit.(mid_fit_check, target) do
-      :ok -> {:ok, mid_fit_check}
-      :high -> do_binary_search(bounded_increment(mid_list, finish_list), finish_list, fit, target, :midpoint)
-      :low -> do_binary_search(start_list, bounded_decrement(mid_list, start_list), fit, target, :midpoint)
-   end
+      :ok ->
+        {:ok, mid_fit_check}
+
+      :high ->
+        do_binary_search(
+          bounded_increment(mid_list, finish_list),
+          finish_list,
+          fit,
+          target,
+          :midpoint
+        )
+
+      :low ->
+        do_binary_search(
+          start_list,
+          bounded_decrement(mid_list, start_list),
+          fit,
+          target,
+          :midpoint
+        )
+    end
   end
+
   defp do_binary_search(start_list, finish_list, fit, target, :interval) do
     mid_list = binary_search_interval(start_list, finish_list)
     # Maintain backward-compatibility
-    mid_fit_check = if Kernel.length(mid_list) === 1, do: List.first(mid_list), else: mid_list
+    mid_fit_check =
+      if Kernel.length(mid_list) === 1, do: List.first(mid_list), else: mid_list
+
     case fit.(mid_fit_check, target) do
       :ok -> {:ok, mid_fit_check}
       :high -> do_binary_search(mid_list, finish_list, fit, target, :interval)
@@ -179,6 +221,7 @@ defmodule KitchenSink.Algorithms do
   defp ok_or_not_found(list, fit, target) do
     # Maintain backward-compatibility
     fit_check = if Kernel.length(list) === 1, do: List.first(list), else: list
+
     case fit.(fit_check, target) do
       :ok -> {:ok, fit_check}
       _ -> {:not_found, fit_check}

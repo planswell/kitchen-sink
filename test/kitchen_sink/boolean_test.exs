@@ -25,5 +25,4 @@ defmodule KitchenSink.BooleanTest do
     assert Boolean.parse("falsy") === :error
     assert Boolean.parse(2) === :error
   end
-
 end

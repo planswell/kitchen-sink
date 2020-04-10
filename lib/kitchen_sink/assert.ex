@@ -18,40 +18,47 @@ defmodule KitchenSink.Assert do
 
   Any nodes that fail this test will be displayed in nice colors in the assert error message.
   """
-  def assertish(expected, actual, epsilon, msg \\ "") when is_map(actual) and is_map(expected) do
-    a_paths = KMap.key_paths(actual) |> Enum.sort
-    e_paths = KMap.key_paths(expected) |> Enum.sort
+  def assertish(expected, actual, epsilon, msg \\ "")
+      when is_map(actual) and is_map(expected) do
+    a_paths = KMap.key_paths(actual) |> Enum.sort()
+    e_paths = KMap.key_paths(expected) |> Enum.sort()
 
     assert e_paths == a_paths
 
     test_results =
       a_paths
-      |> Enum.map(fn path -> {path, {get_in(expected, path), get_in(actual, path)}} end)
+      |> Enum.map(fn path ->
+        {path, {get_in(expected, path), get_in(actual, path)}}
+      end)
       |> Enum.map(fn {path, {expected, actual} = test} ->
-          path_str = pretty_path(path)
-          error_msg =
-            IO.ANSI.format(
-              [
-                msg,
-                :cyan,
-                "error comparing path: ",
-                :magenta,
-                :bright,
-                "#{path_str}",
-                :reset,
-                " -> ",
-                :green,
-                "#{inspect expected}",
-                :reset,
-                " == ",
-                :red,
-                "#{inspect actual}",
-                :reset],
-              true)
-              |> IO.chardata_to_string #because asserts are macros :(
+        path_str = pretty_path(path)
 
-          do_assertish(test, epsilon, error_msg)
-        end)
+        error_msg =
+          IO.ANSI.format(
+            [
+              msg,
+              :cyan,
+              "error comparing path: ",
+              :magenta,
+              :bright,
+              "#{path_str}",
+              :reset,
+              " -> ",
+              :green,
+              "#{inspect(expected)}",
+              :reset,
+              " == ",
+              :red,
+              "#{inspect(actual)}",
+              :reset
+            ],
+            true
+          )
+          # because asserts are macros :(
+          |> IO.chardata_to_string()
+
+        do_assertish(test, epsilon, error_msg)
+      end)
       |> Enum.filter(&match?({false, _}, &1))
       |> Enum.map(&elem(&1, 1))
 
@@ -62,12 +69,19 @@ defmodule KitchenSink.Assert do
     end
   end
 
-  defp do_assertish({%{__struct__: _} = expected, %{__struct__: _} = actual}, _espilon, msg) do
+  defp do_assertish(
+         {%{__struct__: _} = expected, %{__struct__: _} = actual},
+         _espilon,
+         msg
+       ) do
     {expected == actual, msg}
   end
-  defp do_assertish({expected, actual}, epsilon, msg) when is_number(actual) and is_number(expected) do
+
+  defp do_assertish({expected, actual}, epsilon, msg)
+       when is_number(actual) and is_number(expected) do
     {abs(expected - actual) < epsilon, msg}
   end
+
   defp do_assertish({expected, actual}, _epsilon, msg) do
     {expected == actual, msg}
   end

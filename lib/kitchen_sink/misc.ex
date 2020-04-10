@@ -1,5 +1,4 @@
 defmodule KitchenSink.Misc do
-
   @moduledoc false
 
   @doc """
@@ -21,14 +20,16 @@ defmodule KitchenSink.Misc do
     fn
       list when is_list(list) ->
         Enum.at(list, index)
+
       tuple when is_tuple(tuple) ->
         elem(tuple, index)
+
       map when is_map(map) ->
         map
         |> Stream.take(index + 1)
         |> Stream.drop(index)
-        |> Enum.to_list
-        |> Map.new
+        |> Enum.to_list()
+        |> Map.new()
     end
   end
 

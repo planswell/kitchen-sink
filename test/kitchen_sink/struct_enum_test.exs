@@ -10,7 +10,8 @@ defmodule KitchenSink.StructEnumTest do
   test "check if map works" do
     expected = [30, "Test User"]
 
-    actual = Enum.map(%TestStruct{name: "Test User", age: 30}, fn {_, v} -> v end)
+    actual =
+      Enum.map(%TestStruct{name: "Test User", age: 30}, fn {_, v} -> v end)
 
     assert expected == actual
   end

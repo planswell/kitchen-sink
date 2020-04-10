@@ -58,8 +58,13 @@ defmodule KitchenSink.List do
   """
   @spec index_on(list(map), list(any), any) :: map
   def index_on(list_of_maps, take_keys, value_key) do
-    take_keys = take_keys |> List.wrap |> MapSet.new |> MapSet.delete(value_key) |> MapSet.to_list()
-    lookup_transform = fn(map) ->
+    take_keys =
+      take_keys
+      |> List.wrap()
+      |> MapSet.new()
+      |> MapSet.delete(value_key)
+
+    lookup_transform = fn map ->
       {
         Map.take(map, take_keys),
         map[value_key]
@@ -68,7 +73,7 @@ defmodule KitchenSink.List do
 
     list_of_maps
     |> Enum.map(lookup_transform)
-    |> Map.new
+    |> Map.new()
   end
 
   @doc """

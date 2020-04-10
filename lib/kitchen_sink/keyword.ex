@@ -16,6 +16,7 @@ defmodule KitchenSink.Keyword do
   defp do_resolve(_, left, right) when is_list(left) and is_list(right) do
     do_deep_merge(left, right)
   end
+
   defp do_resolve(_, _left, right) do
     right
   end

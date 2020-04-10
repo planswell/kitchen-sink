@@ -14,8 +14,8 @@ defmodule KitchenSink.Mixfile do
       build_path: "_build",
       deps_path: "deps",
       lockfile: "mix.lock",
-      build_embedded: Mix.env == :prod,
-      start_permanent: Mix.env == :prod,
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
       deps: deps(),
       # Hex
       package: hex_package(),
@@ -26,15 +26,18 @@ defmodule KitchenSink.Mixfile do
         source_ref: "v#{@version}",
         main: "KitchenSink",
         source_url: @repo_url,
-        extras: ["README.md", "CHANGELOG.md"],
+        extras: ["README.md", "CHANGELOG.md"]
       ],
-      elixirc_paths: elixirc_paths(Mix.env),
-      dialyzer: [ignore_warnings: "dialyzer.ignore-warnings", plt_add_deps: :transitive],
+      elixirc_paths: elixirc_paths(Mix.env()),
+      dialyzer: [
+        ignore_warnings: "dialyzer.ignore-warnings",
+        plt_add_deps: :transitive
+      ]
     ]
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
-  defp elixirc_paths(_),     do: ["lib"]
+  defp elixirc_paths(_), do: ["lib"]
 
   def application do
     [

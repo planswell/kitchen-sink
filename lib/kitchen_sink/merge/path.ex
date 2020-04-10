@@ -7,7 +7,8 @@ defmodule KitchenSink.Merge.Path do
   """
   def path(destination_object, origin_object, merge_path) do
     merge_path = List.wrap(merge_path)
-    merge_new_field = fn (_id, obj_to_update, update_obj) ->
+
+    merge_new_field = fn _id, obj_to_update, update_obj ->
       updated_field = get_in(update_obj, merge_path)
       put_in(obj_to_update, merge_path, updated_field)
     end

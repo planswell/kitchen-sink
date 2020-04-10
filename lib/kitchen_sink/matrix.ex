@@ -1,5 +1,4 @@
 defmodule KitchenSink.Matrix do
-
   @moduledoc """
   this module is for dealing with matrix (2d array) operations
   """
@@ -9,7 +8,7 @@ defmodule KitchenSink.Matrix do
   """
   def transpose(matrix) when is_list(matrix) do
     matrix
-    |> List.zip
+    |> List.zip()
     |> Enum.map(&Tuple.to_list(&1))
   end
 end

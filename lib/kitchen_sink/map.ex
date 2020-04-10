@@ -27,27 +27,28 @@ defmodule KitchenSink.Map do
   end
 
   def merge(list) when is_list(list) do
-    Enum.reduce list, reverse(&Map.merge/2)
+    Enum.reduce(list, reverse(&Map.merge/2))
   end
 
   def merge([el, el2]) do
     Map.merge(el, el2)
   end
 
-  @doc"""
+  @doc """
 
   deep_merge overcomes a limitation of Map.merge in that it will merge
   trees. deep_merge will attempt to make the minimum possible change
   when it merges 2 trees.
 
   """
-  def deep_merge(left, right, options \\ []) when is_map(left) and is_map(right) do
+  def deep_merge(left, right, options \\ [])
+      when is_map(left) and is_map(right) do
     do_deep_merge(left, right, options)
   end
 
-  #FIXME: this should be moved to a list namespace
+  # FIXME: this should be moved to a list namespace
   def deep_merge_list(list, options \\ []) when is_list(list) do
-    Enum.reduce list, &do_deep_merge(&2, &1, options)
+    Enum.reduce(list, &do_deep_merge(&2, &1, options))
   end
 
   # This allows us to do merges with structs that
@@ -57,17 +58,22 @@ defmodule KitchenSink.Map do
     right = clean_struct(right)
     do_deep_merge(left, right, options)
   end
+
   # When the left argument is a struct, ensure that its own keys are the only
   # ones considered for the merge.
   # This guarantees that we don't convert it into a map containing new keys.
   defp do_deep_merge(%{__struct__: _} = left, right, options) do
-    :maps.map(fn key, left_value ->
-      case Map.get(right, key) do
-        nil         -> left_value
-        right_value -> do_deep_resolve(key, left_value, right_value, options)
-      end
-    end, left)
+    :maps.map(
+      fn key, left_value ->
+        case Map.get(right, key) do
+          nil -> left_value
+          right_value -> do_deep_resolve(key, left_value, right_value, options)
+        end
+      end,
+      left
+    )
   end
+
   defp do_deep_merge(left, right, options) do
     Map.merge(left, right, &do_deep_resolve(&1, &2, &3, options))
   end
@@ -77,10 +83,12 @@ defmodule KitchenSink.Map do
     rest = Enum.take(left, length(right) - length(left))
     list ++ rest
   end
+
   defp list_match_length(list, left, right) when length(right) > length(left) do
     rest = Enum.take(right, length(left) - length(right))
     list ++ rest
   end
+
   defp list_match_length(list, _left, _right), do: list
 
   # Key exists in both maps, and both values are maps as well.
@@ -91,10 +99,11 @@ defmodule KitchenSink.Map do
 
   # We merge two lists so that each item gets checked and merged.
   # If there is more items in either then it gets passed through.
-  defp do_deep_resolve(_key, left_list, right_list, [merge_lists: true]) when is_list(left_list) and is_list(right_list) do
+  defp do_deep_resolve(_key, left_list, right_list, merge_lists: true)
+       when is_list(left_list) and is_list(right_list) do
     Enum.zip(left_list, right_list)
     |> Enum.map(fn {left, right} ->
-      do_deep_merge(left, right, [merge_lists: true])
+      do_deep_merge(left, right, merge_lists: true)
     end)
     |> list_match_length(left_list, right_list)
   end
@@ -115,10 +124,12 @@ defmodule KitchenSink.Map do
   def clean_struct(%{__struct__: struct_type} = struct) do
     empty_struct = struct(struct_type, %{})
     map = Map.from_struct(struct)
+
     do_clean_struct = fn
       {:__struct__, _} -> false
       {key, value} -> value !== Map.get(empty_struct, key)
     end
+
     map
     |> Enum.filter(do_clean_struct)
     |> Enum.into(%{})
@@ -136,28 +147,35 @@ defmodule KitchenSink.Map do
 
   """
 
-  def rename_key(%{} = map, options) when is_list(options) and length(options) === 1 do
+  def rename_key(%{} = map, options)
+      when is_list(options) and length(options) === 1 do
     [{current_key, new_key}] = options
     rename_key(map, current_key, new_key)
   end
+
   def rename_key(%{} = map, %{} = key_map) when map_size(key_map) === 1 do
-    [{current_key, new_key}] = Map.to_list key_map
+    [{current_key, new_key}] = Map.to_list(key_map)
     rename_key(map, current_key, new_key)
   end
+
   def rename_key(%{} = map, {current_key, new_key}) do
     rename_key(map, current_key, new_key)
   end
+
   def rename_key(_, _) do
     %{}
   end
 
   def rename_key(map, current_key, new_key, options \\ [overwrite: false])
+
   def rename_key(nil, _, _, _) do
     %{}
   end
+
   def rename_key(%{} = map, key, key, _options) do
     map
   end
+
   def rename_key(%{} = map, current_key, new_key, overwrite: true) do
     {popped, popped_map} = Map.pop(map, current_key)
 
@@ -166,6 +184,7 @@ defmodule KitchenSink.Map do
       _ -> Map.put(popped_map, new_key, popped)
     end
   end
+
   def rename_key(%{} = map, current_key, new_key, overwrite: false) do
     {popped, popped_map} = Map.pop(map, current_key)
 
@@ -182,9 +201,9 @@ defmodule KitchenSink.Map do
   """
   def make_nested(value, key_list) do
     key_list
-    |> Enum.reverse
-    |> Enum.reduce(value, fn (key, acc) -> %{key => acc} end)
-    |> Map.new
+    |> Enum.reverse()
+    |> Enum.reduce(value, fn key, acc -> %{key => acc} end)
+    |> Map.new()
   end
 
   @doc """
@@ -204,21 +223,23 @@ defmodule KitchenSink.Map do
   ``key_map``
 
   """
-  def remap_keys(_map, key_map, prune: true) when map_size(key_map) === 0, do: %{}
+  def remap_keys(_map, key_map, prune: true) when map_size(key_map) === 0,
+    do: %{}
+
   def remap_keys(map, key_map, prune: true) do
-    renamed_key = fn(map) ->
+    renamed_key = fn map ->
       fn
-        ({old_key, [new_key]}) ->
+        {old_key, [new_key]} ->
           value = Map.get(map, old_key)
-        %{new_key => value}
+          %{new_key => value}
 
-        ({old_key, [root_key | key_list]}) ->
+        {old_key, [root_key | key_list]} ->
           value = Map.get(map, old_key)
-        %{root_key => make_nested(value, key_list)}
+          %{root_key => make_nested(value, key_list)}
 
-        ({old_key, new_key}) ->
+        {old_key, new_key} ->
           value = Map.get(map, old_key)
-        %{new_key => value}
+          %{new_key => value}
       end
     end
 
@@ -257,7 +278,7 @@ defmodule KitchenSink.Map do
   fn(%{a:, b: ...}) -> %{a: a_transform_fun(a), b: b_transform_fun(b) ...}
   """
   def transform_values(transformer_map) do
-    fn(map) ->
+    fn map ->
       transformer_map
       |> Map.new(fn {key, transform} ->
         original_value = Map.get(map, key)
@@ -297,29 +318,29 @@ defmodule KitchenSink.Map do
   key-value in the Map has been transformed. supplying `prune: true` prunes the map so only transformed values are
   output.
   """
-  @spec transform(map, map, Keyword.t) :: map
+  @spec transform(map, map, Keyword.t()) :: map
   def transform(map, transformation_map, [prune: true] = _opts) do
-    transform_key_value = fn (map, key, transform_fun) ->
+    transform_key_value = fn map, key, transform_fun ->
       Map.get(map, key) |> transform_fun.()
     end
 
-    renamed_key = fn(map) ->
+    renamed_key = fn map ->
       fn
         # only transform values
-        ({old_key, {transform_fun}}) ->
+        {old_key, {transform_fun}} ->
           value = transform_key_value.(map, old_key, transform_fun)
           %{old_key => value}
 
         # rename keys and transform values
-        ({old_key, {[new_key], transform_fun}}) ->
+        {old_key, {[new_key], transform_fun}} ->
           value = transform_key_value.(map, old_key, transform_fun)
           %{new_key => value}
 
-        ({old_key, {[root_key | key_list], transform_fun}}) ->
+        {old_key, {[root_key | key_list], transform_fun}} ->
           value = transform_key_value.(map, old_key, transform_fun)
           %{root_key => make_nested(value, key_list)}
 
-        ({old_key, {new_key, transform_fun}}) ->
+        {old_key, {new_key, transform_fun}} ->
           value = transform_key_value.(map, old_key, transform_fun)
           %{new_key => value}
       end
@@ -327,8 +348,12 @@ defmodule KitchenSink.Map do
 
     t_map_keys = Map.keys(transformation_map)
     input_map_keys = Map.keys(map)
+
     # you can do t_map_keys -- input_map_keys here, but this is faster for large maps.
-    keys_to_drop = MapSet.difference(MapSet.new(t_map_keys), MapSet.new(input_map_keys)) |> MapSet.to_list()
+    keys_to_drop =
+      MapSet.difference(MapSet.new(t_map_keys), MapSet.new(input_map_keys))
+      |> MapSet.to_list()
+
     cleaned_t_map = Map.drop(transformation_map, keys_to_drop)
 
     cleaned_t_map
@@ -381,14 +406,17 @@ defmodule KitchenSink.Map do
   defp do_key_paths({key, %{} = map_key}) when map_size(map_key) === 0 do
     [[key]]
   end
+
   defp do_key_paths({key, %{__struct__: _}}) do
     [[key]]
   end
+
   defp do_key_paths({key, value}) when is_map(value) do
     sub_keys = key_paths(value)
 
     Enum.map(sub_keys, &Enum.concat([key], &1))
   end
+
   defp do_key_paths({key, _value}) do
     [[key]]
   end
@@ -478,7 +506,7 @@ defmodule KitchenSink.Map do
       |> key_paths()
       |> Enum.into(primary_paths)
 
-    compare_path = fn(path) ->
+    compare_path = fn path ->
       primary_val = get_in(primary, path)
       secondary_val = get_in(secondary, path)
       {path, primary_val, secondary_val}
@@ -491,6 +519,7 @@ defmodule KitchenSink.Map do
 
   def is_enumerable(%{__struct__: module}), do: is_enumerable(module)
   def is_enumerable(type) when is_map(type), do: true
+
   def is_enumerable(type) do
     Protocol.assert_impl!(Enumerable, type)
     true
@@ -507,9 +536,12 @@ defmodule KitchenSink.Map do
         else
           {key, children}
         end
-      {key, val} -> {key, val}
+
+      {key, val} ->
+        {key, val}
     end)
-    |> Enum.reject(empty_val_fn?) # we need to do the filter step after map
+    # we need to do the filter step after map
+    |> Enum.reject(empty_val_fn?)
     |> Map.new()
   end
 
@@ -527,6 +559,7 @@ defmodule KitchenSink.Map do
 
     do_trim(map, empty_val?)
   end
+
   def trim(%{} = map, empty_val_fn?) do
     do_trim(map, empty_val_fn?)
   end

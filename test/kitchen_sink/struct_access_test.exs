@@ -12,6 +12,8 @@ defmodule KitchenSink.StructAccessTest do
   end
 
   test "struct should be able be changed" do
-    assert put_in(%TestStruct{}, [:name], "Test User") == %TestStruct{name: "Test User"}
+    assert put_in(%TestStruct{}, [:name], "Test User") == %TestStruct{
+             name: "Test User"
+           }
   end
 end

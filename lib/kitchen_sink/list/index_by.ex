@@ -6,6 +6,7 @@ defmodule KitchenSink.List.IndexBy do
     indices = Enum.map(list, key_fun)
     Enum.zip(indices, list) |> Map.new()
   end
+
   def index_by(list, path) do
     index_path = List.wrap(path)
     indices = get_in(list, [Access.all() | index_path])

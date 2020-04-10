@@ -1,5 +1,4 @@
 defmodule KitchenSink.Math do
-
   @moduledoc """
   Math functions!
   """
@@ -23,8 +22,13 @@ defmodule KitchenSink.Math do
   def div(_numerator, 0.0, div_by_zero), do: div_by_zero
   def div(numerator, denominator, _div_by_zero), do: numerator / denominator
 
-  defdelegate ceil(number, significance), to: __MODULE__, as: :round_up_to_multiple
-  defdelegate floor(number, significance), to: __MODULE__, as: :round_down_to_multiple
+  defdelegate ceil(number, significance),
+    to: __MODULE__,
+    as: :round_up_to_multiple
+
+  defdelegate floor(number, significance),
+    to: __MODULE__,
+    as: :round_down_to_multiple
 
   @doc """
   Round down to the nearest multiple of significance.
@@ -47,7 +51,9 @@ defmodule KitchenSink.Math do
   def round_down_to_multiple(_, 0) do
     raise ArgumentError, message: "Significance multiple cannot be zero."
   end
-  def round_down_to_multiple(number, significance) when is_integer(significance) do
+
+  def round_down_to_multiple(number, significance)
+      when is_integer(significance) do
     trunc(Float.floor(number / significance) * significance)
   end
 
@@ -72,7 +78,9 @@ defmodule KitchenSink.Math do
   def round_up_to_multiple(_, 0) do
     raise ArgumentError, message: "Significance multiple cannot be zero."
   end
-  def round_up_to_multiple(number, significance) when is_integer(significance) do
+
+  def round_up_to_multiple(number, significance)
+      when is_integer(significance) do
     trunc(Float.ceil(number / significance) * significance)
   end
 end

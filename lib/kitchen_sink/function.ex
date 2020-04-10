@@ -1,5 +1,4 @@
 defmodule KitchenSink.Function do
-
   @moduledoc """
   this module is for higher order functions
   """
@@ -8,7 +7,7 @@ defmodule KitchenSink.Function do
   reverses the arguments of a function.
   """
   def reverse(fun) when is_function(fun, 2) do
-    fn(arg1, arg2) -> fun.(arg2, arg1) end
+    fn arg1, arg2 -> fun.(arg2, arg1) end
   end
 
   @doc """
@@ -20,8 +19,8 @@ defmodule KitchenSink.Function do
   executes a value over a list of functions (this is functional composition without macros)
   """
   def pipe(functions) when is_list(functions) do
-    fn(input) ->
-      Enum.reduce(functions, input, fn (fun, acc) ->
+    fn input ->
+      Enum.reduce(functions, input, fn fun, acc ->
         fun.(acc)
       end)
     end
@@ -32,7 +31,7 @@ defmodule KitchenSink.Function do
   """
   def compose(functions) when is_list(functions) do
     functions
-    |> Enum.reverse
+    |> Enum.reverse()
     |> pipe
   end
 
@@ -43,10 +42,12 @@ defmodule KitchenSink.Function do
   def juxt(input, functions) when is_list(functions) do
     Enum.map(functions, fn fun -> fun.(input) end)
   end
+
   def juxt(functions) when is_list(functions) do
-    #good for optimiztion
+    # good for optimiztion
     super_fun = fn x -> Enum.map(functions, fn fun -> fun.(x) end) end
-    fn(input_list) ->
+
+    fn input_list ->
       Enum.map(input_list, super_fun)
     end
   end

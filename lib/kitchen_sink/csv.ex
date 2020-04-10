@@ -1,5 +1,4 @@
 defmodule KitchenSink.CSV do
-
   @moduledoc """
   This module is for CSV helper functions.
   """
@@ -18,9 +17,9 @@ defmodule KitchenSink.CSV do
 
     {values, indices} =
       sparse_list
-      |> Enum.with_index
+      |> Enum.with_index()
       |> Enum.reject(&match?({^empty_matcher, _}, &1))
-      |> Enum.unzip
+      |> Enum.unzip()
 
     indices
     |> Enum.drop(1)

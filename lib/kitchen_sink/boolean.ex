@@ -1,5 +1,4 @@
 defmodule KitchenSink.Boolean do
-
   @moduledoc """
   this module is for Boolean functions
   """
@@ -24,13 +23,14 @@ defmodule KitchenSink.Boolean do
       iex> parse("Lie")
       :error
   """
-  @spec parse(String.t | integer) :: boolean | :error
+  @spec parse(String.t() | integer) :: boolean | :error
   def parse(value) when is_binary(value) do
     value
-    |> String.trim
-    |> String.downcase
+    |> String.trim()
+    |> String.downcase()
     |> string_bool?
   end
+
   def parse(value) when is_integer(value) do
     case value do
       1 -> true
