@@ -4,7 +4,7 @@ Module to make improvements to the Elixir Standard API. This module should follo
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
+This package [is available in Hex](https://hexdocs.pm/kitchen_sink/KitchenSink.html) and can be installed this way:
 
   1. Add `kitchen_sink` to your list of dependencies in `mix.exs`:
 
